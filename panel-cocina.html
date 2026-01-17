@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ber-Mely POS - Panel Cocina</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header de Cocina -->
+    <header class="app-header header-cocina">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-utensils"></i>
+            </div>
+            <div class="header-info">
+                <h1>Panel de Cocina</h1>
+                <p id="usuarioInfo">Cocina Principal</p>
+            </div>
+        </div>
+        
+        <div class="header-center">
+            <div class="status-indicator">
+                <i class="fas fa-fire"></i>
+                <span id="modoCocina">Modo Normal</span>
+            </div>
+            <div class="hora-actual" id="horaActual"></div>
+        </div>
+        
+        <div class="header-right">
+            <button class="btn btn-warning" onclick="verTodosEspacios()">
+                <i class="fas fa-eye"></i> Ver Espacios
+            </button>
+            <button class="btn btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Salir
+            </button>
+        </div>
+    </header>
+
+    <!-- Dashboard de Cocina -->
+    <main class="dashboard-cocina">
+        <!-- Estadísticas -->
+        <section class="estadisticas-section">
+            <h2><i class="fas fa-chart-line"></i> Dashboard Cocina</h2>
+            
+            <div class="estadisticas-grid">
+                <div class="estadistica-card estadistica-pendientes">
+                    <div class="estadistica-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="estadistica-valor" id="contadorPendientes">0</div>
+                    <div class="estadistica-label">Pendientes</div>
+                </div>
+                
+                <div class="estadistica-card estadistica-preparacion">
+                    <div class="estadistica-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div class="estadistica-valor" id="contadorPreparacion">0</div>
+                    <div class="estadistica-label">En Preparación</div>
+                </div>
+                
+                <div class="estadistica-card estadistica-listo">
+                    <div class="estadistica-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="estadistica-valor" id="contadorListo">0</div>
+                    <div class="estadistica-label">Listos Hoy</div>
+                </div>
+                
+                <div class="estadistica-card estadistica-retardo">
+                    <div class="estadistica-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="estadistica-valor" id="contadorRetardo">0</div>
+                    <div class="estadistica-label">Con Retardo</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de Comandas y Espacios -->
+        <div class="cocina-contenedor">
+            <!-- Comandas Activas -->
+            <section class="comandas-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-clipboard-list"></i> Comandas Activas - Cocina</h2>
+                    <div class="filtros">
+                        <button class="btn btn-sm btn-secondary active" onclick="filtrarComandas('todas')">
+                            Todas
+                        </button>
+                        <button class="btn btn-sm btn-warning" onclick="filtrarComandas('pendientes')">
+                            Pendientes
+                        </button>
+                        <button class="btn btn-sm btn-primary" onclick="filtrarComandas('preparacion')">
+                            En Preparación
+                        </button>
+                        <button class="btn btn-sm btn-success" onclick="filtrarComandas('listo')">
+                            Listos
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="comandas-container" id="comandasContainer">
+                    <!-- Comandas se cargan dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Espacios con Pedidos de Cocina -->
+            <section class="espacios-cocina-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chair"></i> 12 Espacios - Consumo Cocina</h2>
+                    <div class="tiempo-promedio" id="tiempoPromedioCocina">
+                        <i class="fas fa-clock"></i>
+                        <span>Tiempo promedio: <span id="tiempoPromedioValor">0</span> min</span>
+                    </div>
+                </div>
+                
+                <div class="espacios-cocina-grid" id="espaciosCocinaGrid">
+                    <!-- Solo espacios con pedidos de cocina -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal para Detalle de Comanda -->
+    <div class="modal-overlay" id="modalDetalleComanda">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-clipboard-check"></i> Detalle de Comanda - Cocina</h3>
+                <button class="btn-close" onclick="cerrarModal('modalDetalleComanda')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="comanda-detalle" id="comandaDetalle">
+                    <!-- Detalle de comanda se carga aquí -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="cerrarModal('modalDetalleComanda')">
+                    Cerrar
+                </button>
+                <div id="comandaAcciones">
+                    <!-- Acciones dinámicas -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Ver Todos los Espacios -->
+    <div class="modal-overlay" id="modalTodosEspacios">
+        <div class="modal-content modal-xl">
+            <div class="modal-header">
+                <h3><i class="fas fa-eye"></i> Vista Completa - 12 Espacios</h3>
+                <button class="btn-close" onclick="cerrarModal('modalTodosEspacios')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="vista-completa-container">
+                    <div class="filtros-vista">
+                        <button class="btn btn-sm btn-secondary" onclick="filtrarVistaEspacios('todos')">
+                            Todos
+                        </button>
+                        <button class="btn btn-sm btn-warning" onclick="filtrarVistaEspacios('conPedidos')">
+                            Con pedidos cocina
+                        </button>
+                        <button class="btn btn-sm btn-success" onclick="filtrarVistaEspacios('libres')">
+                            Libres
+                        </button>
+                    </div>
+                    
+                    <div class="vista-espacios-grid" id="vistaEspaciosGrid">
+                        <!-- Todos los espacios se cargan aquí -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/firebase.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/espacios.js"></script>
+    <script src="js/pedidos.js"></script>
+    <script>
+        // Variables globales
+        let comandaSeleccionada = null;
+        let filtroActual = 'todas';
+        let vistaEspaciosFiltro = 'todos';
+        let intervaloActualizacion = null;
+
+        // Inicializar sistema
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarSesion('cocina');
+            inicializarSistema();
+        });
+
+        function inicializarSistema() {
+            cargarUsuarioInfo();
+            actualizarHora();
+            cargarEstadisticas();
+            cargarComandas();
+            cargarEspaciosCocina();
+            
+            // Iniciar intervalo de actualización
+            intervaloActualizacion = setInterval(() => {
+                cargarEstadisticas();
+                cargarComandas();
+                cargarEspaciosCocina();
+                actualizarHora();
+            }, 15000); // Actualizar cada 15 segundos
+            
+            // Configurar modo según hora
+            configurarModoCocina();
+        }
+
+        function cargarUsuarioInfo() {
+            const usuario = getUsuarioActual();
+            if (usuario) {
+                document.getElementById('usuarioInfo').textContent = usuario.nombre;
+            }
+        }
+
+        function actualizarHora() {
+            const ahora = new Date();
+            const hora = ahora.toLocaleTimeString('es-MX', { 
+                hour: '2-digit', 
+                minute: '2-digit'
+            });
+            document.getElementById('horaActual').textContent = hora;
+        }
+
+        function configurarModoCocina() {
+            const ahora = new Date();
+            const hora = ahora.getHours();
+            let modo = 'Modo Normal';
+            let icono = 'fire';
+            
+            if (hora >= 12 && hora < 15) {
+                modo = '🔥 Hora Pico Almuerzo';
+                icono = 'fire';
+            } else if (hora >= 19 && hora < 22) {
+                modo = '🔥 Hora Pico Cena';
+                icono = 'fire';
+            } else if (hora >= 22 || hora < 6) {
+                modo = '🌙 Modo Nocturno';
+                icono = 'moon';
+            }
+            
+            document.getElementById('modoCocina').textContent = modo;
+        }
+
+        async function cargarEstadisticas() {
+            try {
+                const pedidos = await obtenerPedidosPorArea('cocina');
+                const ahora = new Date();
+                const inicioDia = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+                
+                const pendientes = pedidos.filter(p => p.estado === 'pendiente').length;
+                const preparacion = pedidos.filter(p => p.estado === 'preparacion').length;
+                const listos = pedidos.filter(p => p.estado === 'listo' && 
+                    new Date(p.horaListo) >= inicioDia).length;
+                
+                // Calcular retardos (más de 10 minutos)
+                const retardos = pedidos.filter(p => {
+                    if (p.estado === 'pendiente' || p.estado === 'preparacion') {
+                        const tiempoCreacion = new Date(p.horaCreacion);
+                        const minutosTranscurridos = (ahora - tiempoCreacion) / (1000 * 60);
+                        return minutosTranscurridos > 10;
+                    }
+                    return false;
+                }).length;
+                
+                // Calcular tiempo promedio
+                let tiempoTotal = 0;
+                let pedidosConTiempo = 0;
+                
+                pedidos.forEach(pedido => {
+                    if (pedido.horaCreacion && pedido.horaListo) {
+                        const inicio = new Date(pedido.horaCreacion);
+                        const fin = new Date(pedido.horaListo);
+                        const minutos = (fin - inicio) / (1000 * 60);
+                        tiempoTotal += minutos;
+                        pedidosConTiempo++;
+                    }
+                });
+                
+                const tiempoPromedio = pedidosConTiempo > 0 ? Math.round(tiempoTotal / pedidosConTiempo) : 0;
+                
+                document.getElementById('contadorPendientes').textContent = pendientes;
+                document.getElementById('contadorPreparacion').textContent = preparacion;
+                document.getElementById('contadorListo').textContent = listos;
+                document.getElementById('contadorRetardo').textContent = retardos;
+                document.getElementById('tiempoPromedioValor').textContent = tiempoPromedio;
+                
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+            }
+        }
+
+        async function cargarComandas() {
+            try {
+                const pedidos = await obtenerPedidosPorArea('cocina');
+                const container = document.getElementById('comandasContainer');
+                
+                // Filtrar según el filtro actual
+                let pedidosFiltrados = pedidos;
+                if (filtroActual === 'pendientes') {
+                    pedidosFiltrados = pedidos.filter(p => p.estado === 'pendiente');
+                } else if (filtroActual === 'preparacion') {
+                    pedidosFiltrados = pedidos.filter(p => p.estado === 'preparacion');
+                } else if (filtroActual === 'listo') {
+                    pedidosFiltrados = pedidos.filter(p => p.estado === 'listo');
+                }
+                
+                if (pedidosFiltrados.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-utensils"></i>
+                            <p>No hay comandas ${filtroActual === 'todas' ? '' : filtroActual}</p>
+                            <small>Las comandas aparecerán aquí cuando los meseros envíen pedidos</small>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Ordenar por tiempo de creación (más antiguos primero)
+                pedidosFiltrados.sort((a, b) => new Date(a.horaCreacion) - new Date(b.horaCreacion));
+                
+                container.innerHTML = pedidosFiltrados.map(pedido => {
+                    const tiempoCreacion = new Date(pedido.horaCreacion);
+                    const ahora = new Date();
+                    const minutosTranscurridos = Math.floor((ahora - tiempoCreacion) / (1000 * 60));
+                    
+                    let tiempoClase = '';
+                    let tiempoTexto = `${minutosTranscurridos} min`;
+                    
+                    if (minutosTranscurridos > 10) {
+                        tiempoClase = 'tiempo-retardo';
+                        tiempoTexto = `⚠️ ${minutosTranscurridos} min (RETARDO)`;
+                    } else if (minutosTranscurridos > 5) {
+                        tiempoClase = 'tiempo-alerta';
+                        tiempoTexto = `⏰ ${minutosTranscurridos} min`;
+                    }
+                    
+                    return `
+                        <div class="comanda-card ${pedido.estado}" 
+                             onclick="verDetalleComanda('${pedido.id}')">
+                            <div class="comanda-header">
+                                <div class="comanda-info">
+                                    <h4>${pedido.espacioNombre} - ${pedido.cliente}</h4>
+                                    <div class="comanda-meta">
+                                        <span class="mesero">
+                                            <i class="fas fa-user"></i> ${pedido.mesero}
+                                        </span>
+                                        <span class="hora">
+                                            <i class="fas fa-clock"></i> ${tiempoCreacion.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="comanda-estado">
+                                    <span class="estado-badge badge-${pedido.estado}">
+                                        ${pedido.estado.toUpperCase()}
+                                    </span>
+                                    <div class="comanda-tiempo ${tiempoClase}">
+                                        <i class="fas fa-hourglass-half"></i>
+                                        ${tiempoTexto}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="comanda-resumen">
+                                <div class="items-count">
+                                    <i class="fas fa-hamburger"></i>
+                                    ${pedido.items.length} items
+                                    <span class="comanda-total">$${pedido.total.toFixed(2)}</span>
+                                </div>
+                                <div class="acciones-rapidas">
+                                    ${pedido.estado === 'pendiente' ? `
+                                        <button class="btn btn-sm btn-primary" 
+                                                onclick="iniciarPreparacion(event, '${pedido.id}')">
+                                            <i class="fas fa-play"></i> Iniciar
+                                        </button>
+                                    ` : ''}
+                                    
+                                    ${pedido.estado === 'preparacion' ? `
+                                        <button class="btn btn-sm btn-success" 
+                                                onclick="marcarListo(event, '${pedido.id}')">
+                                            <i class="fas fa-check"></i> Listo
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Error cargando comandas:', error);
+                const container = document.getElementById('comandasContainer');
+                container.innerHTML = `
+                    <div class="empty-state error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Error cargando comandas</p>
+                        <button class="btn btn-sm btn-primary" onclick="cargarComandas()">
+                            Reintentar
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        async function cargarEspaciosCocina() {
+            try {
+                const espacios = await obtenerEspacios();
+                const grid = document.getElementById('espaciosCocinaGrid');
+                
+                // Filtrar espacios con pedidos de cocina
+                const espaciosConPedidosCocina = espacios.filter(espacio => {
+                    if (!espacio.pedido || !espacio.pedido.items) return false;
+                    
+                    // Verificar si hay items de cocina
+                    const itemsCocina = espacio.pedido.items.filter(item => item.area === 'cocina');
+                    return itemsCocina.length > 0;
+                });
+                
+                if (espaciosConPedidosCocina.length === 0) {
+                    grid.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-chair"></i>
+                            <p>No hay espacios con pedidos de cocina</p>
+                            <small>Los espacios aparecerán aquí cuando haya pedidos de cocina</small>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                grid.innerHTML = espaciosConPedidosCocina.map(espacio => {
+                    // Filtrar solo items de cocina
+                    const itemsCocina = espacio.pedido.items.filter(item => item.area === 'cocina');
+                    const totalCocina = itemsCocina.reduce((sum, item) => sum + item.subtotal, 0);
+                    
+                    // Obtener pedidos de cocina del espacio
+                    const pedidosCocina = obtenerPedidosCocinaPorEspacio(espacio.id);
+                    
+                    // Calcular estado general
+                    let estadoGeneral = 'libre';
+                    let itemsPendientes = 0;
+                    let itemsPreparacion = 0;
+                    let itemsListos = 0;
+                    
+                    // Simular cálculo basado en pedidos (en producción se usarían datos reales)
+                    itemsCocina.forEach(item => {
+                        // Esta es una simulación - en producción usarías el estado real del item
+                        if (Math.random() > 0.7) itemsListos++;
+                        else if (Math.random() > 0.5) itemsPreparacion++;
+                        else itemsPendientes++;
+                    });
+                    
+                    if (itemsListos === itemsCocina.length) estadoGeneral = 'listo';
+                    else if (itemsPreparacion > 0 || itemsPendientes > 0) estadoGeneral = 'preparacion';
+                    
+                    const tiempo = espacio.horaInicio ? 
+                        Math.round((new Date() - new Date(espacio.horaInicio)) / (1000 * 60)) : 0;
+                    
+                    return `
+                        <div class="espacio-cocina-card ${estadoGeneral}">
+                            <div class="espacio-cocina-header">
+                                <div class="espacio-cocina-nombre">${espacio.nombre}</div>
+                                <div class="espacio-cocina-cliente">${espacio.cliente}</div>
+                                <div class="estado-badge badge-${estadoGeneral}">
+                                    ${estadoGeneral.toUpperCase()}
+                                </div>
+                            </div>
+                            
+                            <div class="espacio-cocina-info">
+                                <div class="info-item">
+                                    <i class="fas fa-user"></i>
+                                    <span>Mesero: ${espacio.mesero || 'N/A'}</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>${tiempo} min</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-dollar-sign"></i>
+                                    <span>Total cocina: $${totalCocina.toFixed(2)}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="espacio-cocina-progreso">
+                                <div class="progreso-titulo">Progreso del pedido:</div>
+                                <div class="progreso-barras">
+                                    <div class="progreso-bar pendiente" style="width: ${(itemsPendientes / itemsCocina.length) * 100}%">
+                                        <span>${itemsPendientes} pendientes</span>
+                                    </div>
+                                    <div class="progreso-bar preparacion" style="width: ${(itemsPreparacion / itemsCocina.length) * 100}%">
+                                        <span>${itemsPreparacion} en prep.</span>
+                                    </div>
+                                    <div class="progreso-bar listo" style="width: ${(itemsListos / itemsCocina.length) * 100}%">
+                                        <span>${itemsListos} listos</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="espacio-cocina-items">
+                                <div class="items-titulo">Items de cocina:</div>
+                                ${itemsCocina.map(item => `
+                                    <div class="item-cocina">
+                                        <span class="item-nombre">${item.cantidad}x ${item.nombre}</span>
+                                        <span class="item-estado ${item.estado || 'pendiente'}">
+                                            ${item.estado || 'PENDIENTE'}
+                                        </span>
+                                        ${item.comentario ? `
+                                            <div class="item-comentario">
+                                                <i class="fas fa-sticky-note"></i> ${item.comentario}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                            
+                            <div class="espacio-cocina-acciones">
+                                <button class="btn btn-sm btn-info" onclick="verDetalleEspacioCocina('${espacio.id}')">
+                                    <i class="fas fa-eye"></i> Ver detalles
+                                </button>
+                                <button class="btn btn-sm btn-primary" onclick="verPedidosEspacio('${espacio.id}')">
+                                    <i class="fas fa-clipboard-list"></i> Ver pedidos
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (error) {
+                console.error('Error cargando espacios cocina:', error);
+            }
+        }
+
+        async function obtenerPedidosCocinaPorEspacio(espacioId) {
+            try {
+                const pedidos = await obtenerPedidosPorEspacio(espacioId);
+                return pedidos.filter(pedido => pedido.area === 'cocina');
+            } catch (error) {
+                console.error('Error obteniendo pedidos por espacio:', error);
+                return [];
+            }
+        }
+
+        function filtrarComandas(filtro) {
+            filtroActual = filtro;
+            
+            // Actualizar botones activos
+            document.querySelectorAll('.filtros .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            cargarComandas();
+        }
+
+        async function verDetalleComanda(comandaId) {
+            try {
+                const pedido = await obtenerPedido(comandaId);
+                comandaSeleccionada = pedido;
+                
+                const tiempoCreacion = new Date(pedido.horaCreacion);
+                const ahora = new Date();
+                const minutosTranscurridos = Math.floor((ahora - tiempoCreacion) / (1000 * 60));
+                
+                let tiempoHTML = '';
+                if (minutosTranscurridos > 10) {
+                    tiempoHTML = `<span class="text-danger">⚠️ RETARDO: ${minutosTranscurridos} minutos</span>`;
+                } else if (minutosTranscurridos > 5) {
+                    tiempoHTML = `<span class="text-warning">⏰ ALERTA: ${minutosTranscurridos} minutos</span>`;
+                } else {
+                    tiempoHTML = `<span class="text-success">${minutosTranscurridos} minutos</span>`;
+                }
+                
+                const detalleHTML = `
+                    <div class="comanda-detalle-header">
+                        <h4>${pedido.espacioNombre} - ${pedido.cliente}</h4>
+                        <div class="comanda-info-detalle">
+                            <div class="info-item">
+                                <i class="fas fa-user"></i>
+                                <strong>Mesero:</strong> ${pedido.mesero}
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-clock"></i>
+                                <strong>Hora:</strong> ${tiempoCreacion.toLocaleTimeString()}
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-hourglass-half"></i>
+                                <strong>Tiempo transcurrido:</strong> ${tiempoHTML}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="comanda-items-detalle">
+                        <h5>Items a preparar:</h5>
+                        ${pedido.items.map((item, index) => `
+                            <div class="item-detalle">
+                                <div class="item-header">
+                                    <span class="item-nombre">
+                                        ${item.cantidad}x ${item.nombre}
+                                    </span>
+                                    <span class="item-subtotal">
+                                        $${item.subtotal.toFixed(2)}
+                                    </span>
+                                </div>
+                                
+                                ${item.extras && item.extras.length > 0 ? `
+                                    <div class="item-extras">
+                                        <strong>Extras:</strong>
+                                        ${item.extras.map(extra => 
+                                            `${extra.nombre} (+$${extra.precio.toFixed(2)})`
+                                        ).join(', ')}
+                                    </div>
+                                ` : ''}
+                                
+                                ${item.comentario ? `
+                                    <div class="item-comentario">
+                                        <strong><i class="fas fa-sticky-note"></i> Comentario:</strong>
+                                        ${item.comentario}
+                                    </div>
+                                ` : ''}
+                                
+                                <div class="item-acciones">
+                                    <button class="btn btn-sm btn-secondary" onclick="marcarItemPreparacion(${index})">
+                                        <i class="fas fa-play"></i> En preparación
+                                    </button>
+                                    <button class="btn btn-sm btn-success" onclick="marcarItemListo(${index})">
+                                        <i class="fas fa-check"></i> Listo
+                                    </button>
+                                </div>
+                                
+                                ${index < pedido.items.length - 1 ? '<hr>' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="comanda-total">
+                        <strong>Total:</strong> $${pedido.items.reduce((sum, item) => sum + item.subtotal, 0).toFixed(2)}
+                    </div>
+                `;
+                
+                document.getElementById('comandaDetalle').innerHTML = detalleHTML;
+                
+                // Configurar acciones según estado
+                const accionesHTML = `
+                    ${pedido.estado === 'pendiente' ? `
+                        <button class="btn btn-primary" onclick="iniciarPreparacionDesdeModal()">
+                            <i class="fas fa-play"></i> Iniciar Preparación
+                        </button>
+                    ` : ''}
+                    
+                    ${pedido.estado === 'preparacion' ? `
+                        <button class="btn btn-success" onclick="marcarListoDesdeModal()">
+                            <i class="fas fa-check-double"></i> Marcar como Listo
+                        </button>
+                    ` : ''}
+                    
+                    <button class="btn btn-secondary" onclick="cerrarModal('modalDetalleComanda')">
+                        Cerrar
+                    </button>
+                `;
+                
+                document.getElementById('comandaAcciones').innerHTML = accionesHTML;
+                
+                abrirModal('modalDetalleComanda');
+                
+            } catch (error) {
+                console.error('Error cargando detalle de comanda:', error);
+                alert('Error al cargar los detalles de la comanda');
+            }
+        }
+
+        function marcarItemPreparacion(index) {
+            // Implementar lógica para marcar item individual
+            alert(`Item ${index + 1} marcado como en preparación`);
+        }
+
+        function marcarItemListo(index) {
+            // Implementar lógica para marcar item individual
+            alert(`Item ${index + 1} marcado como listo`);
+        }
+
+        async function iniciarPreparacion(event, comandaId) {
+            if (event) event.stopPropagation();
+            
+            try {
+                await actualizarEstadoPedido(comandaId, {
+                    estado: 'preparacion',
+                    horaPreparacion: new Date().toISOString()
+                });
+                
+                cargarEstadisticas();
+                cargarComandas();
+                cargarEspaciosCocina();
+                
+                mostrarNotificacion('Comanda iniciada en preparación', 'success');
+                
+            } catch (error) {
+                console.error('Error iniciando preparación:', error);
+                mostrarNotificacion('Error al iniciar preparación', 'error');
+            }
+        }
+
+        async function iniciarPreparacionDesdeModal() {
+            if (!comandaSeleccionada) return;
+            
+            try {
+                await actualizarEstadoPedido(comandaSeleccionada.id, {
+                    estado: 'preparacion',
+                    horaPreparacion: new Date().toISOString()
+                });
+                
+                cerrarModal('modalDetalleComanda');
+                cargarEstadisticas();
+                cargarComandas();
+                cargarEspaciosCocina();
+                
+                mostrarNotificacion('Comanda iniciada en preparación', 'success');
+                
+            } catch (error) {
+                console.error('Error iniciando preparación:', error);
+                mostrarNotificacion('Error al iniciar preparación', 'error');
+            }
+        }
+
+        async function marcarListo(event, comandaId) {
+            if (event) event.stopPropagation();
+            
+            try {
+                await actualizarEstadoPedido(comandaId, {
+                    estado: 'listo',
+                    horaListo: new Date().toISOString()
+                });
+                
+                cargarEstadisticas();
+                cargarComandas();
+                cargarEspaciosCocina();
+                
+                mostrarNotificacion('Comanda marcada como lista', 'success');
+                
+            } catch (error) {
+                console.error('Error marcando como listo:', error);
+                mostrarNotificacion('Error al marcar como listo', 'error');
+            }
+        }
+
+        async function marcarListoDesdeModal() {
+            if (!comandaSeleccionada) return;
+            
+            try {
+                await actualizarEstadoPedido(comandaSeleccionada.id, {
+                    estado: 'listo',
+                    horaListo: new Date().toISOString()
+                });
+                
+                cerrarModal('modalDetalleComanda');
+                cargarEstadisticas();
+                cargarComandas();
+                cargarEspaciosCocina();
+                
+                mostrarNotificacion('Comanda marcada como lista', 'success');
+                
+            } catch (error) {
+                console.error('Error marcando como listo:', error);
+                mostrarNotificacion('Error al marcar como listo', 'error');
+            }
+        }
+
+        function mostrarNotificacion(mensaje, tipo = 'info') {
+            // Crear elemento de notificación
+            const notificacion = document.createElement('div');
+            notificacion.className = `notificacion notificacion-${tipo}`;
+            notificacion.innerHTML = `
+                <i class="fas fa-${tipo === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                <span>${mensaje}</span>
+            `;
+            
+            document.body.appendChild(notificacion);
+            
+            // Remover después de 3 segundos
+            setTimeout(() => {
+                notificacion.remove();
+            }, 3000);
+        }
+
+        async function verDetalleEspacioCocina(espacioId) {
+            try {
+                const espacio = await obtenerEspacioPorId(espacioId);
+                if (!espacio) return;
+                
+                // Obtener pedidos de cocina del espacio
+                const pedidosCocina = await obtenerPedidosCocinaPorEspacio(espacioId);
+                
+                let detalleHTML = `
+                    <h4>${espacio.nombre} - ${espacio.cliente}</h4>
+                    <div class="detalle-espacio-info">
+                        <div class="info-item">
+                            <strong>Mesero:</strong> ${espacio.mesero || 'N/A'}
+                        </div>
+                        <div class="info-item">
+                            <strong>Comensales:</strong> ${espacio.comensales || 'N/A'}
+                        </div>
+                        <div class="info-item">
+                            <strong>Hora inicio:</strong> ${espacio.horaInicio ? new Date(espacio.horaInicio).toLocaleTimeString() : 'N/A'}
+                        </div>
+                        <div class="info-item">
+                            <strong>Tiempo transcurrido:</strong> ${espacio.horaInicio ? Math.round((new Date() - new Date(espacio.horaInicio)) / (1000 * 60)) : 0} min
+                        </div>
+                    </div>
+                `;
+                
+                if (pedidosCocina.length > 0) {
+                    detalleHTML += `
+                        <h5>Pedidos de cocina:</h5>
+                        <div class="pedidos-detalle">
+                            ${pedidosCocina.map(pedido => `
+                                <div class="pedido-detalle ${pedido.estado}">
+                                    <div class="pedido-header">
+                                        <span class="pedido-estado estado-${pedido.estado}">${pedido.estado.toUpperCase()}</span>
+                                        <span class="pedido-hora">${new Date(pedido.horaCreacion).toLocaleTimeString()}</span>
+                                    </div>
+                                    <div class="pedido-items">
+                                        ${pedido.items.map(item => `
+                                            <div class="item-detalle">
+                                                ${item.cantidad}x ${item.nombre}
+                                                ${item.comentario ? `<small class="comentario">${item.comentario}</small>` : ''}
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                // Usar modal de detalle de comanda para mostrar
+                document.getElementById('comandaDetalle').innerHTML = detalleHTML;
+                document.getElementById('comandaAcciones').innerHTML = `
+                    <button class="btn btn-secondary" onclick="cerrarModal('modalDetalleComanda')">
+                        Cerrar
+                    </button>
+                `;
+                
+                abrirModal('modalDetalleComanda');
+                
+            } catch (error) {
+                console.error('Error cargando detalle del espacio:', error);
+                alert('Error al cargar los detalles del espacio');
+            }
+        }
+
+        async function verPedidosEspacio(espacioId) {
+            try {
+                const pedidos = await obtenerPedidosPorEspacio(espacioId);
+                const pedidosCocina = pedidos.filter(p => p.area === 'cocina');
+                
+                if (pedidosCocina.length === 0) {
+                    alert('No hay pedidos de cocina para este espacio');
+                    return;
+                }
+                
+                // Redirigir al detalle del primer pedido pendiente o en preparación
+                const pedidoActivo = pedidosCocina.find(p => p.estado === 'pendiente' || p.estado === 'preparacion');
+                if (pedidoActivo) {
+                    verDetalleComanda(pedidoActivo.id);
+                } else {
+                    verDetalleComanda(pedidosCocina[0].id);
+                }
+                
+            } catch (error) {
+                console.error('Error cargando pedidos del espacio:', error);
+            }
+        }
+
+        // NUEVO: Función para ver todos los espacios
+        async function verTodosEspacios() {
+            try {
+                const espacios = await obtenerEspacios();
+                
+                let vistaHTML = `
+                    <div class="vista-espacios-info">
+                        <div class="info-resumen">
+                            <span class="info-item"><strong>Total:</strong> ${espacios.length} espacios</span>
+                            <span class="info-item"><strong>Libres:</strong> ${espacios.filter(e => e.estado === 'libre').length}</span>
+                            <span class="info-item"><strong>Con pedidos cocina:</strong> ${espacios.filter(e => e.pedido && e.pedido.items.some(item => item.area === 'cocina')).length}</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Filtrar según el filtro actual
+                let espaciosFiltrados = espacios;
+                if (vistaEspaciosFiltro === 'conPedidos') {
+                    espaciosFiltrados = espacios.filter(espacio => 
+                        espacio.pedido && espacio.pedido.items.some(item => item.area === 'cocina')
+                    );
+                } else if (vistaEspaciosFiltro === 'libres') {
+                    espaciosFiltrados = espacios.filter(espacio => espacio.estado === 'libre');
+                }
+                
+                if (espaciosFiltrados.length === 0) {
+                    vistaHTML += `
+                        <div class="empty-state">
+                            <i class="fas fa-chair"></i>
+                            <p>No hay espacios que coincidan con el filtro</p>
+                        </div>
+                    `;
+                } else {
+                    vistaHTML += '<div class="vista-espacios-lista">';
+                    
+                    espaciosFiltrados.forEach(espacio => {
+                        const itemsCocina = espacio.pedido ? 
+                            espacio.pedido.items.filter(item => item.area === 'cocina') : [];
+                        const totalCocina = itemsCocina.reduce((sum, item) => sum + item.subtotal, 0);
+                        
+                        const tiempo = espacio.horaInicio ? 
+                            Math.round((new Date() - new Date(espacio.horaInicio)) / (1000 * 60)) : 0;
+                        
+                        vistaHTML += `
+                            <div class="vista-espacio-card ${espacio.estado}">
+                                <div class="vista-espacio-header">
+                                    <div class="vista-espacio-nombre">${espacio.nombre}</div>
+                                    <div class="estado-badge badge-${espacio.estado}">
+                                        ${espacio.estado.toUpperCase()}
+                                    </div>
+                                </div>
+                                
+                                <div class="vista-espacio-info">
+                                    <div class="info-item">
+                                        <strong>Cliente:</strong> ${espacio.cliente || 'Libre'}
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Mesero:</strong> ${espacio.mesero || 'N/A'}
+                                    </div>
+                                    <div class="info-item">
+                                        <strong>Tiempo:</strong> ${tiempo} min
+                                    </div>
+                                    ${totalCocina > 0 ? `
+                                        <div class="info-item">
+                                            <strong>Consumo cocina:</strong> $${totalCocina.toFixed(2)}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                                
+                                ${itemsCocina.length > 0 ? `
+                                    <div class="vista-espacio-items">
+                                        <strong>Items cocina (${itemsCocina.length}):</strong>
+                                        ${itemsCocina.slice(0, 3).map(item => `
+                                            <div class="item-mini">
+                                                ${item.cantidad}x ${item.nombre}
+                                            </div>
+                                        `).join('')}
+                                        ${itemsCocina.length > 3 ? `
+                                            <div class="item-mas">+${itemsCocina.length - 3} más</div>
+                                        ` : ''}
+                                    </div>
+                                ` : ''}
+                                
+                                <div class="vista-espacio-acciones">
+                                    <button class="btn btn-sm btn-info" onclick="verDetalleEspacioCocina('${espacio.id}')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    ${itemsCocina.length > 0 ? `
+                                        <button class="btn btn-sm btn-primary" onclick="verPedidosEspacio('${espacio.id}')">
+                                            <i class="fas fa-clipboard-list"></i>
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    vistaHTML += '</div>';
+                }
+                
+                document.getElementById('vistaEspaciosGrid').innerHTML = vistaHTML;
+                abrirModal('modalTodosEspacios');
+                
+            } catch (error) {
+                console.error('Error cargando todos los espacios:', error);
+                alert('Error al cargar la vista de espacios');
+            }
+        }
+
+        function filtrarVistaEspacios(filtro) {
+            vistaEspaciosFiltro = filtro;
+            
+            // Actualizar botones activos
+            document.querySelectorAll('.filtros-vista .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            verTodosEspacios(); // Recargar con el nuevo filtro
+        }
+
+        function abrirModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function cerrarModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que quieres salir del panel de cocina?')) {
+                if (intervaloActualizacion) {
+                    clearInterval(intervaloActualizacion);
+                }
+                window.location.href = 'cocina.html';
+            }
+        }
+    </script>
+</body>
+</html>

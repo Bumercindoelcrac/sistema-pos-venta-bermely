@@ -1,0 +1,2821 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ber-Mely POS - Panel Administrativo</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header Admin -->
+    <header class="app-header header-admin">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-crown"></i>
+            </div>
+            <div class="header-info">
+                <h1>Panel Administrativo</h1>
+                <p id="usuarioInfo">Administrador</p>
+                <p id="rolUsuario" class="rol-info"></p>
+            </div>
+        </div>
+        
+        <div class="header-center">
+            <div class="fecha-hora">
+                <span id="fechaActual"></span>
+                <span id="horaActual"></span>
+            </div>
+            <div class="status-sistema">
+                <i class="fas fa-circle text-success"></i>
+                <span id="statusSistema">Sistema Activo</span>
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <button class="btn btn-warning" onclick="abrirCaja()" id="btnCaja">
+                <i class="fas fa-cash-register"></i> Caja
+            </button>
+            <button class="btn btn-info" onclick="abrirReporteRapido()">
+                <i class="fas fa-chart-bar"></i> Reporte
+            </button>
+            <button class="btn btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+            </button>
+        </div>
+    </header>
+
+    <!-- Dashboard Admin -->
+    <main class="dashboard-admin">
+        <!-- Tabs de Navegación -->
+        <nav class="admin-tabs">
+            <button class="tab-btn active" onclick="abrirTab('dashboard')" id="tab-dashboard-btn">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </button>
+            <button class="tab-btn" onclick="abrirTab('mesas')" id="tab-mesas-btn">
+                <i class="fas fa-chair"></i> 12 Espacios
+            </button>
+            <button class="tab-btn" onclick="abrirTab('caja')" id="tab-caja-btn">
+                <i class="fas fa-cash-register"></i> Caja
+                <span class="tab-badge" id="badgeCaja">0</span>
+            </button>
+            <button class="tab-btn" onclick="abrirTab('pedidos')" id="tab-pedidos-btn">
+                <i class="fas fa-clipboard-list"></i> Pedidos
+                <span class="tab-badge" id="badgePedidos">0</span>
+            </button>
+            <button class="tab-btn" onclick="abrirTab('menu')" id="tab-menu-btn">
+                <i class="fas fa-utensils"></i> Menú
+            </button>
+            <button class="tab-btn" onclick="abrirTab('usuarios')" id="tab-usuarios-btn">
+                <i class="fas fa-users"></i> Usuarios
+            </button>
+            <button class="tab-btn" onclick="abrirTab('reportes')" id="tab-reportes-btn">
+                <i class="fas fa-chart-bar"></i> Reportes
+            </button>
+            <button class="tab-btn" onclick="abrirTab('config')" id="tab-config-btn">
+                <i class="fas fa-cog"></i> Configuración
+            </button>
+        </nav>
+
+        <!-- Contenido de Tabs -->
+        <div class="admin-content">
+            <!-- Dashboard -->
+            <div id="tab-dashboard" class="tab-content active">
+                <div class="tab-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> Dashboard del Sistema</h2>
+                    <div class="tab-actions">
+                        <button class="btn btn-sm btn-primary" onclick="actualizarDashboard()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                        <select class="form-control-sm" id="dashboardPeriodo" onchange="actualizarDashboard()">
+                            <option value="hoy">Hoy</option>
+                            <option value="ayer">Ayer</option>
+                            <option value="semana">Esta semana</option>
+                            <option value="mes">Este mes</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="dashboard-stats" id="dashboardStats">
+                    <!-- Estadísticas se cargan dinámicamente -->
+                </div>
+                
+                <div class="dashboard-widgets">
+                    <div class="widget widget-lg">
+                        <div class="widget-header">
+                            <h3><i class="fas fa-fire"></i> Cocina - Estado Actual</h3>
+                            <span class="widget-badge" id="badgeCocina">0</span>
+                        </div>
+                        <div class="widget-body" id="widgetCocina">
+                            <!-- Estado de cocina -->
+                        </div>
+                    </div>
+                    
+                    <div class="widget widget-lg">
+                        <div class="widget-header">
+                            <h3><i class="fas fa-coffee"></i> Cafetería - Estado Actual</h3>
+                            <span class="widget-badge" id="badgeCafeteria">0</span>
+                        </div>
+                        <div class="widget-body" id="widgetCafeteria">
+                            <!-- Estado de cafetería -->
+                        </div>
+                    </div>
+                    
+                    <div class="widget">
+                        <div class="widget-header">
+                            <h3><i class="fas fa-concierge-bell"></i> Meseros Activos</h3>
+                        </div>
+                        <div class="widget-body" id="widgetMeseros">
+                            <!-- Meseros activos -->
+                        </div>
+                    </div>
+                    
+                    <div class="widget">
+                        <div class="widget-header">
+                            <h3><i class="fas fa-exclamation-triangle"></i> Alertas</h3>
+                        </div>
+                        <div class="widget-body" id="widgetAlertas">
+                            <!-- Alertas del sistema -->
+                        </div>
+                    </div>
+                    
+                    <div class="widget widget-full">
+                        <div class="widget-header">
+                            <h3><i class="fas fa-chart-line"></i> Ventas por Hora (Hoy)</h3>
+                        </div>
+                        <div class="widget-body">
+                            <div class="grafico-ventas" id="graficoVentas">
+                                <!-- Gráfico de ventas -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 12 Espacios -->
+            <div id="tab-mesas" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-chair"></i> Gestión de 12 Espacios</h2>
+                    <div class="tab-actions">
+                        <button class="btn btn-sm btn-success" onclick="liberarTodasMesas()">
+                            <i class="fas fa-broom"></i> Liberar Todas
+                        </button>
+                        <button class="btn btn-sm btn-primary" onclick="cargarEspaciosAdmin()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="estadisticas-rapidas">
+                    <div class="estadistica-rapida">
+                        <span class="valor" id="estLibres">0</span>
+                        <span class="label">Libres</span>
+                    </div>
+                    <div class="estadistica-rapida">
+                        <span class="valor" id="estOcupadas">0</span>
+                        <span class="label">Ocupadas</span>
+                    </div>
+                    <div class="estadistica-rapida">
+                        <span class="valor" id="estPreparacion">0</span>
+                        <span class="label">En Preparación</span>
+                    </div>
+                    <div class="estadistica-rapida">
+                        <span class="valor" id="estListo">0</span>
+                        <span class="label">Listo</span>
+                    </div>
+                    <div class="estadistica-rapida">
+                        <span class="valor" id="estPorCobrar">0</span>
+                        <span class="label">Por Cobrar</span>
+                    </div>
+                </div>
+                
+                <div class="espacios-admin-grid" id="espaciosAdminGrid">
+                    <!-- Espacios se cargan dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Caja -->
+            <div id="tab-caja" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-cash-register"></i> Sistema de Caja</h2>
+                    <div class="tab-actions">
+                        <button class="btn btn-sm btn-success" onclick="abrirCorteCaja()">
+                            <i class="fas fa-calculator"></i> Corte de Caja
+                        </button>
+                        <button class="btn btn-sm btn-primary" onclick="exportarCaja()">
+                            <i class="fas fa-file-export"></i> Exportar
+                        </button>
+                        <select class="form-control-sm" id="filtroCaja" onchange="cargarCaja()">
+                            <option value="hoy">Hoy</option>
+                            <option value="ayer">Ayer</option>
+                            <option value="semana">Esta semana</option>
+                            <option value="mes">Este mes</option>
+                            <option value="personalizado">Personalizado</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="resumen-caja">
+                    <div class="resumen-item">
+                        <span>Efectivo:</span>
+                        <span class="valor" id="cajaEfectivo">$0.00</span>
+                    </div>
+                    <div class="resumen-item">
+                        <span>Tarjeta:</span>
+                        <span class="valor" id="cajaTarjeta">$0.00</span>
+                    </div>
+                    <div class="resumen-item">
+                        <span>Transferencia:</span>
+                        <span class="valor" id="cajaTransferencia">$0.00</span>
+                    </div>
+                    <div class="resumen-item total">
+                        <span>Total:</span>
+                        <span class="valor" id="cajaTotal">$0.00</span>
+                    </div>
+                </div>
+                
+                <div class="tabla-caja-container">
+                    <table class="tabla-caja" id="tablaCaja">
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th>Espacio</th>
+                                <th>Cliente</th>
+                                <th>Total</th>
+                                <th>Método</th>
+                                <th>Mesero</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpoTablaCaja">
+                            <!-- Datos de caja se cargan aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Pedidos -->
+            <div id="tab-pedidos" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-clipboard-list"></i> Gestión de Pedidos</h2>
+                    <div class="tab-actions">
+                        <button class="btn btn-sm btn-primary" onclick="cargarPedidosAdmin()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                        <select class="form-control-sm" id="filtroPedidos" onchange="cargarPedidosAdmin()">
+                            <option value="todos">Todos</option>
+                            <option value="pendiente">Pendientes</option>
+                            <option value="preparacion">En preparación</option>
+                            <option value="listo">Listos</option>
+                            <option value="entregado">Entregados</option>
+                        </select>
+                        <select class="form-control-sm" id="filtroAreaPedidos" onchange="cargarPedidosAdmin()">
+                            <option value="todas">Todas las áreas</option>
+                            <option value="cocina">Cocina</option>
+                            <option value="cafeteria">Cafetería</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="pedidos-admin-container" id="pedidosAdminContainer">
+                    <!-- Pedidos se cargan dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Menú -->
+            <div id="tab-menu" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-utensils"></i> Gestión del Menú</h2>
+                    <div class="tab-actions">
+                        <button class="btn btn-sm btn-success" onclick="abrirModalNuevoProducto()">
+                            <i class="fas fa-plus"></i> Nuevo Producto
+                        </button>
+                        <button class="btn btn-sm btn-primary" onclick="cargarMenuAdmin()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="estadisticas-menu">
+                    <div class="estadistica-menu">
+                        <span class="valor" id="menuTotal">0</span>
+                        <span class="label">Total Productos</span>
+                    </div>
+                    <div class="estadistica-menu">
+                        <span class="valor" id="menuCocina">0</span>
+                        <span class="label">Cocina</span>
+                    </div>
+                    <div class="estadistica-menu">
+                        <span class="valor" id="menuCafeteria">0</span>
+                        <span class="label">Cafetería</span>
+                    </div>
+                    <div class="estadistica-menu">
+                        <span class="valor" id="menuDisponible">0</span>
+                        <span class="label">Disponibles</span>
+                    </div>
+                    <div class="estadistica-menu">
+                        <span class="valor" id="menuPromedio">$0.00</span>
+                        <span class="label">Precio Promedio</span>
+                    </div>
+                </div>
+                
+                <div class="filtros-menu">
+                    <input type="text" class="form-control" id="buscarMenuAdmin" placeholder="Buscar producto..." oninput="filtrarMenuAdmin()">
+                    <select class="form-control" id="filtroAreaMenu" onchange="filtrarMenuAdmin()">
+                        <option value="todas">Todas las áreas</option>
+                        <option value="cocina">Cocina</option>
+                        <option value="cafeteria">Cafetería</option>
+                    </select>
+                    <select class="form-control" id="filtroCategoriaMenu" onchange="filtrarMenuAdmin()">
+                        <option value="todas">Todas las categorías</option>
+                        <!-- Categorías se cargan dinámicamente -->
+                    </select>
+                    <select class="form-control" id="filtroDisponibleMenu" onchange="filtrarMenuAdmin()">
+                        <option value="todos">Todos</option>
+                        <option value="disponible">Disponibles</option>
+                        <option value="no-disponible">No disponibles</option>
+                    </select>
+                </div>
+                
+                <div class="tabla-menu-container">
+                    <table class="tabla-menu" id="tablaMenu">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Categoría</th>
+                                <th>Área</th>
+                                <th>Precio</th>
+                                <th>Extras</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpoTablaMenu">
+                            <!-- Productos del menú se cargan aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Usuarios -->
+            <div id="tab-usuarios" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-users"></i> Gestión de Usuarios</h2>
+                    <div class="tab-actions">
+                        <button class="btn btn-sm btn-success" onclick="abrirModalNuevoUsuario()">
+                            <i class="fas fa-user-plus"></i> Nuevo Usuario
+                        </button>
+                        <button class="btn btn-sm btn-primary" onclick="cargarUsuariosAdmin()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="estadisticas-usuarios">
+                    <div class="estadistica-usuario">
+                        <span class="valor" id="usuariosTotal">0</span>
+                        <span class="label">Total Usuarios</span>
+                    </div>
+                    <div class="estadistica-usuario">
+                        <span class="valor" id="usuariosAdmin">0</span>
+                        <span class="label">Administradores</span>
+                    </div>
+                    <div class="estadistica-usuario">
+                        <span class="valor" id="usuariosMesero">0</span>
+                        <span class="label">Meseros</span>
+                    </div>
+                    <div class="estadistica-usuario">
+                        <span class="valor" id="usuariosCocina">0</span>
+                        <span class="label">Cocina</span>
+                    </div>
+                    <div class="estadistica-usuario">
+                        <span class="valor" id="usuariosCafeteria">0</span>
+                        <span class="label">Cafetería</span>
+                    </div>
+                </div>
+                
+                <div class="tabla-usuarios-container">
+                    <table class="tabla-usuarios" id="tablaUsuarios">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Nombre</th>
+                                <th>Rol</th>
+                                <th>Email/Turno</th>
+                                <th>Último Acceso</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpoTablaUsuarios">
+                            <!-- Usuarios se cargan aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Reportes -->
+            <div id="tab-reportes" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-chart-bar"></i> Reportes y Estadísticas</h2>
+                    <div class="tab-actions">
+                        <button class="btn btn-sm btn-success" onclick="generarReporteCompleto()">
+                            <i class="fas fa-file-pdf"></i> Generar PDF
+                        </button>
+                        <button class="btn btn-sm btn-primary" onclick="exportarReporteExcel()">
+                            <i class="fas fa-file-excel"></i> Exportar Excel
+                        </button>
+                        <select class="form-control-sm" id="reportePeriodo" onchange="cargarReportes()">
+                            <option value="hoy">Hoy</option>
+                            <option value="ayer">Ayer</option>
+                            <option value="semana">Esta semana</option>
+                            <option value="mes">Este mes</option>
+                            <option value="personalizado">Personalizado</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="reportes-container">
+                    <div class="reporte-section">
+                        <h3><i class="fas fa-chart-line"></i> Ventas Totales</h3>
+                        <div class="reporte-ventas" id="reporteVentas">
+                            <!-- Gráfico de ventas -->
+                        </div>
+                    </div>
+                    
+                    <div class="reporte-datos">
+                        <div class="reporte-col">
+                            <h3><i class="fas fa-utensils"></i> Productos Más Vendidos</h3>
+                            <div class="lista-productos" id="listaProductosVendidos">
+                                <!-- Productos más vendidos -->
+                            </div>
+                        </div>
+                        
+                        <div class="reporte-col">
+                            <h3><i class="fas fa-users"></i> Desempeño de Meseros</h3>
+                            <div class="lista-meseros" id="listaDesempenoMeseros">
+                                <!-- Desempeño de meseros -->
+                            </div>
+                        </div>
+                        
+                        <div class="reporte-col">
+                            <h3><i class="fas fa-clock"></i> Tiempos de Preparación</h3>
+                            <div class="lista-tiempos" id="listaTiemposPreparacion">
+                                <!-- Tiempos de preparación -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuración -->
+            <div id="tab-config" class="tab-content">
+                <div class="tab-header">
+                    <h2><i class="fas fa-cog"></i> Configuración del Sistema</h2>
+                    <div class="tab-actions">
+                        <button class="btn btn-sm btn-primary" onclick="guardarConfiguracion()">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="cargarConfiguracion()">
+                            <i class="fas fa-sync-alt"></i> Recargar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="config-container">
+                    <div class="config-section">
+                        <h3><i class="fas fa-store"></i> Configuración del Restaurante</h3>
+                        <div class="form-config">
+                            <div class="form-group">
+                                <label for="configNombre">Nombre del Restaurante</label>
+                                <input type="text" id="configNombre" class="form-control" value="Ber-Mely">
+                            </div>
+                            <div class="form-group">
+                                <label for="configTelefono">Teléfono</label>
+                                <input type="text" id="configTelefono" class="form-control" placeholder="(555) 123-4567">
+                            </div>
+                            <div class="form-group">
+                                <label for="configDireccion">Dirección</label>
+                                <input type="text" id="configDireccion" class="form-control" placeholder="Calle Principal #123">
+                            </div>
+                            <div class="form-group">
+                                <label for="configIVA">Porcentaje de IVA (%)</label>
+                                <input type="number" id="configIVA" class="form-control" value="16" min="0" max="100" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="config-section">
+                        <h3><i class="fas fa-bell"></i> Alertas y Notificaciones</h3>
+                        <div class="form-config">
+                            <div class="form-group-check">
+                                <label>
+                                    <input type="checkbox" id="configAlertasPedidos" checked>
+                                    Alertas de pedidos nuevos
+                                </label>
+                            </div>
+                            <div class="form-group-check">
+                                <label>
+                                    <input type="checkbox" id="configAlertasRetardo" checked>
+                                    Alertas de retardo en preparación
+                                </label>
+                            </div>
+                            <div class="form-group-check">
+                                <label>
+                                    <input type="checkbox" id="configAlertasCaja" checked>
+                                    Alertas de caja
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="configTiempoRetardo">Tiempo para retardo (minutos)</label>
+                                <input type="number" id="configTiempoRetardo" class="form-control" value="10" min="1">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="config-section">
+                        <h3><i class="fas fa-print"></i> Configuración de Impresión</h3>
+                        <div class="form-config">
+                            <div class="form-group-check">
+                                <label>
+                                    <input type="checkbox" id="configImprimirComanda" checked>
+                                    Imprimir comanda automáticamente
+                                </label>
+                            </div>
+                            <div class="form-group-check">
+                                <label>
+                                    <input type="checkbox" id="configImprimirTicket" checked>
+                                    Imprimir ticket al cobrar
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="configImpresora">Nombre de la impresora</label>
+                                <input type="text" id="configImpresora" class="form-control" placeholder="Nombre de la impresora">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="config-section">
+                        <h3><i class="fas fa-database"></i> Mantenimiento del Sistema</h3>
+                        <div class="form-config">
+                            <button class="btn btn-warning btn-block" onclick="realizarBackup()">
+                                <i class="fas fa-download"></i> Realizar Backup
+                            </button>
+                            <button class="btn btn-danger btn-block" onclick="limpiarDatosAntiguos()">
+                                <i class="fas fa-trash"></i> Limpiar datos antiguos
+                            </button>
+                            <button class="btn btn-info btn-block" onclick="restaurarValoresPredeterminados()">
+                                <i class="fas fa-redo"></i> Restaurar valores predeterminados
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modales -->
+    <!-- Modal para Nuevo Producto -->
+    <div class="modal-overlay" id="modalNuevoProducto">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus"></i> Nuevo Producto</h3>
+                <button class="btn-close" onclick="cerrarModal('modalNuevoProducto')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="formNuevoProducto">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="productoNombre">Nombre del Producto *</label>
+                            <input type="text" id="productoNombre" class="form-control" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="productoPrecio">Precio *</label>
+                            <input type="number" id="productoPrecio" class="form-control" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="productoCategoria">Categoría *</label>
+                            <select id="productoCategoria" class="form-control" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="tacos">Tacos</option>
+                                <option value="hamburguesas">Hamburguesas</option>
+                                <option value="crepas">Crepas</option>
+                                <option value="bebidas">Bebidas</option>
+                                <option value="postres">Postres</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="productoArea">Área *</label>
+                            <select id="productoArea" class="form-control" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="cocina">Cocina</option>
+                                <option value="cafeteria">Cafetería</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productoDescripcion">Descripción</label>
+                        <textarea id="productoDescripcion" class="form-control" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <div class="form-check">
+                                <input type="checkbox" id="productoDisponible" class="form-check-input" checked>
+                                <label class="form-check-label" for="productoDisponible">Disponible</label>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <div class="form-check">
+                                <input type="checkbox" id="productoRequiereComentario" class="form-check-input">
+                                <label class="form-check-label" for="productoRequiereComentario">Requiere comentario</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <div class="form-check">
+                                <input type="checkbox" id="productoExpress" class="form-check-input">
+                                <label class="form-check-label" for="productoExpress">Venta Express</label>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <div class="form-check">
+                                <input type="checkbox" id="productoDestacado" class="form-check-input">
+                                <label class="form-check-label" for="productoDestacado">Destacado</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="extras-section">
+                        <h4>Extras</h4>
+                        <div id="listaExtras">
+                            <!-- Extras se agregan dinámicamente -->
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="agregarExtra()">
+                            <i class="fas fa-plus"></i> Agregar Extra
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="cerrarModal('modalNuevoProducto')">
+                    Cancelar
+                </button>
+                <button class="btn btn-success" onclick="guardarNuevoProducto()">
+                    <i class="fas fa-save"></i> Guardar Producto
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Producto -->
+    <div class="modal-overlay" id="modalEditarProducto">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Editar Producto</h3>
+                <button class="btn-close" onclick="cerrarModal('modalEditarProducto')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalEditarProductoBody">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Nuevo Usuario -->
+    <div class="modal-overlay" id="modalNuevoUsuario">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus"></i> Nuevo Usuario</h3>
+                <button class="btn-close" onclick="cerrarModal('modalNuevoUsuario')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="formNuevoUsuario">
+                    <div class="form-group">
+                        <label for="nuevoUsuario">Usuario *</label>
+                        <input type="text" id="nuevoUsuario" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nuevoNombre">Nombre Completo *</label>
+                        <input type="text" id="nuevoNombre" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nuevoPassword">Contraseña *</label>
+                        <input type="password" id="nuevoPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nuevoRol">Rol *</label>
+                        <select id="nuevoRol" class="form-control" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="mesero">Mesero</option>
+                            <option value="cocina">Cocina</option>
+                            <option value="cafeteria">Cafetería</option>
+                            <option value="gerente">Gerente</option>
+                            <option value="admin" id="opcionAdmin" style="display: none;">Administrador</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="grupoTurno" style="display: none;">
+                        <label for="nuevoTurno">Turno (solo meseros)</label>
+                        <select id="nuevoTurno" class="form-control">
+                            <option value="matutino">Matutino</option>
+                            <option value="vespertino">Vespertino</option>
+                            <option value="completo">Completo</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="grupoEmail">
+                        <label for="nuevoEmail">Email (opcional)</label>
+                        <input type="email" id="nuevoEmail" class="form-control">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="cerrarModal('modalNuevoUsuario')">
+                    Cancelar
+                </button>
+                <button class="btn btn-success" onclick="guardarNuevoUsuario()">
+                    <i class="fas fa-save"></i> Crear Usuario
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Corte de Caja -->
+    <div class="modal-overlay" id="modalCorteCaja">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-calculator"></i> Corte de Caja</h3>
+                <button class="btn-close" onclick="cerrarModal('modalCorteCaja')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalCorteCajaBody">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Detalles de Cobro -->
+    <div class="modal-overlay" id="modalDetalleCobro">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-receipt"></i> Detalles del Cobro</h3>
+                <button class="btn-close" onclick="cerrarModal('modalDetalleCobro')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalDetalleCobroBody">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Detalles de Pedido -->
+    <div class="modal-overlay" id="modalDetallePedido">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-clipboard-list"></i> Detalles del Pedido</h3>
+                <button class="btn-close" onclick="cerrarModal('modalDetallePedido')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalDetallePedidoBody">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Configuración de Fecha Personalizada -->
+    <div class="modal-overlay" id="modalFechaPersonalizada">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-calendar"></i> Seleccionar Fechas</h3>
+                <button class="btn-close" onclick="cerrarModal('modalFechaPersonalizada')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="fechaInicio">Fecha Inicio</label>
+                    <input type="date" id="fechaInicio" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="fechaFin">Fecha Fin</label>
+                    <input type="date" id="fechaFin" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="cerrarModal('modalFechaPersonalizada')">
+                    Cancelar
+                </button>
+                <button class="btn btn-primary" onclick="aplicarFechaPersonalizada()">
+                    <i class="fas fa-check"></i> Aplicar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/firebase.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/espacios.js"></script>
+    <script src="js/pedidos.js"></script>
+    <script src="js/menu-extras.js"></script>
+    <script>
+        // Variables globales
+        let usuarioActual = null;
+        let fechaPersonalizada = null;
+
+        // Inicializar sistema admin
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarSesion('admin'); // Admin y gerente pueden acceder
+            inicializarAdmin();
+        });
+
+        function inicializarAdmin() {
+            usuarioActual = getUsuarioActual();
+            cargarInfoUsuario();
+            actualizarFechaHora();
+            setInterval(actualizarFechaHora, 60000);
+            
+            // Configurar eventos
+            document.getElementById('nuevoRol').addEventListener('change', function() {
+                const grupoTurno = document.getElementById('grupoTurno');
+                grupoTurno.style.display = this.value === 'mesero' ? 'block' : 'none';
+            });
+            
+            // Cargar dashboard inicial
+            cargarDashboard();
+            
+            // Configurar escuchas en tiempo real
+            iniciarEscuchasTiempoReal();
+            
+            // Actualizar cada minuto
+            setInterval(actualizarSistema, 60000);
+        }
+
+        function cargarInfoUsuario() {
+            if (usuarioActual) {
+                document.getElementById('usuarioInfo').textContent = usuarioActual.nombre;
+                document.getElementById('rolUsuario').textContent = `Rol: ${usuarioActual.rol.toUpperCase()}`;
+                
+                // Ocultar opción de admin si es gerente
+                if (usuarioActual.rol === 'gerente') {
+                    document.getElementById('opcionAdmin').style.display = 'none';
+                    document.getElementById('tab-config-btn').style.display = 'none';
+                }
+            }
+        }
+
+        function actualizarFechaHora() {
+            const ahora = new Date();
+            const fecha = ahora.toLocaleDateString('es-ES', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            const hora = ahora.toLocaleTimeString('es-ES', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            document.getElementById('fechaActual').textContent = fecha;
+            document.getElementById('horaActual').textContent = hora;
+        }
+
+        function iniciarEscuchasTiempoReal() {
+            // Escuchar cambios en espacios
+            if (typeof escucharEspacios === 'function') {
+                escucharEspacios((espacios) => {
+                    actualizarEstadisticasEspacios(espacios);
+                });
+            }
+            
+            // Escuchar pedidos
+            if (typeof escucharPedidos === 'function') {
+                escucharPedidos('cocina', (pedidos) => {
+                    actualizarWidgetCocina(pedidos);
+                });
+                
+                escucharPedidos('cafeteria', (pedidos) => {
+                    actualizarWidgetCafeteria(pedidos);
+                });
+            }
+        }
+
+        function actualizarSistema() {
+            // Actualizar dashboard si está visible
+            if (document.getElementById('tab-dashboard').classList.contains('active')) {
+                actualizarDashboard();
+            }
+            
+            // Actualizar contadores
+            actualizarContadores();
+        }
+
+        function actualizarContadores() {
+            // Actualizar badges
+            obtenerPedidosPorArea('cocina').then(pedidosCocina => {
+                const pendientesCocina = pedidosCocina.filter(p => p.estado === 'pendiente').length;
+                document.getElementById('badgeCocina').textContent = pendientesCocina;
+            });
+            
+            obtenerPedidosPorArea('cafeteria').then(pedidosCafeteria => {
+                const pendientesCafeteria = pedidosCafeteria.filter(p => p.estado === 'pendiente').length;
+                document.getElementById('badgeCafeteria').textContent = pendientesCafeteria;
+            });
+            
+            // Actualizar badge de pedidos
+            obtenerPedidosHoy().then(pedidos => {
+                document.getElementById('badgePedidos').textContent = pedidos.length;
+            });
+        }
+
+        function abrirTab(tabId) {
+            // Ocultar todos los tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Desactivar todos los botones
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Activar tab seleccionado
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            document.getElementById(`tab-${tabId}-btn`).classList.add('active');
+            
+            // Cargar contenido según tab
+            switch(tabId) {
+                case 'dashboard':
+                    cargarDashboard();
+                    break;
+                case 'mesas':
+                    cargarEspaciosAdmin();
+                    break;
+                case 'caja':
+                    cargarCaja();
+                    break;
+                case 'pedidos':
+                    cargarPedidosAdmin();
+                    break;
+                case 'menu':
+                    cargarMenuAdmin();
+                    break;
+                case 'usuarios':
+                    cargarUsuariosAdmin();
+                    break;
+                case 'reportes':
+                    cargarReportes();
+                    break;
+                case 'config':
+                    cargarConfiguracion();
+                    break;
+            }
+        }
+
+        // ===== DASHBOARD =====
+        async function cargarDashboard() {
+            const periodo = document.getElementById('dashboardPeriodo').value;
+            const ahora = new Date();
+            let fechaInicio, fechaFin;
+            
+            switch(periodo) {
+                case 'hoy':
+                    fechaInicio = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+                    fechaFin = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), 23, 59, 59);
+                    break;
+                case 'ayer':
+                    const ayer = new Date(ahora);
+                    ayer.setDate(ahora.getDate() - 1);
+                    fechaInicio = new Date(ayer.getFullYear(), ayer.getMonth(), ayer.getDate());
+                    fechaFin = new Date(ayer.getFullYear(), ayer.getMonth(), ayer.getDate(), 23, 59, 59);
+                    break;
+                case 'semana':
+                    const diaSemana = ahora.getDay();
+                    const diff = ahora.getDate() - diaSemana + (diaSemana === 0 ? -6 : 1);
+                    fechaInicio = new Date(ahora.setDate(diff));
+                    fechaInicio.setHours(0, 0, 0, 0);
+                    fechaFin = new Date();
+                    break;
+                case 'mes':
+                    fechaInicio = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
+                    fechaFin = new Date(ahora.getFullYear(), ahora.getMonth() + 1, 0, 23, 59, 59);
+                    break;
+            }
+            
+            // Cargar estadísticas
+            await cargarEstadisticasDashboard(fechaInicio, fechaFin);
+            
+            // Cargar widgets
+            await cargarWidgets();
+            
+            // Actualizar contadores
+            actualizarContadores();
+        }
+
+        async function cargarEstadisticasDashboard(fechaInicio, fechaFin) {
+            try {
+                // Obtener cobros del período
+                const todosCobros = JSON.parse(localStorage.getItem('bermely_cobros') || '[]');
+                const cobrosPeriodo = todosCobros.filter(cobro => {
+                    const fechaCobro = new Date(cobro.fecha);
+                    return fechaCobro >= fechaInicio && fechaCobro <= fechaFin;
+                });
+                
+                // Calcular estadísticas
+                const ventasTotal = cobrosPeriodo.reduce((sum, cobro) => sum + cobro.total, 0);
+                const ventasEfectivo = cobrosPeriodo.filter(c => c.metodo === 'efectivo').reduce((sum, cobro) => sum + cobro.total, 0);
+                const ventasTarjeta = cobrosPeriodo.filter(c => c.metodo === 'tarjeta').reduce((sum, cobro) => sum + cobro.total, 0);
+                const ventasTransferencia = cobrosPeriodo.filter(c => c.metodo === 'transferencia').reduce((sum, cobro) => sum + cobro.total, 0);
+                
+                // Obtener pedidos del período
+                const todosPedidos = JSON.parse(localStorage.getItem('bermely_pedidos') || '[]');
+                const pedidosPeriodo = todosPedidos.filter(pedido => {
+                    const fechaPedido = new Date(pedido.horaCreacion);
+                    return fechaPedido >= fechaInicio && fechaPedido <= fechaFin;
+                });
+                
+                const pedidosCompletados = pedidosPeriodo.filter(p => p.estado === 'entregado').length;
+                const pedidosPendientes = pedidosPeriodo.filter(p => p.estado === 'pendiente' || p.estado === 'preparacion').length;
+                
+                // Calcular tiempo promedio
+                let tiempoTotal = 0;
+                let pedidosConTiempo = 0;
+                
+                pedidosPeriodo.forEach(pedido => {
+                    if (pedido.horaCreacion && pedido.horaListo) {
+                        const inicio = new Date(pedido.horaCreacion);
+                        const fin = new Date(pedido.horaListo);
+                        const minutos = (fin - inicio) / (1000 * 60);
+                        tiempoTotal += minutos;
+                        pedidosConTiempo++;
+                    }
+                });
+                
+                const tiempoPromedio = pedidosConTiempo > 0 ? Math.round(tiempoTotal / pedidosConTiempo) : 0;
+                
+                // Actualizar HTML
+                const statsHTML = `
+                    <div class="stat-card stat-primary">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">$${ventasTotal.toFixed(2)}</div>
+                            <div class="stat-label">Ventas Totales</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card stat-success">
+                        <div class="stat-icon">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">${pedidosCompletados}</div>
+                            <div class="stat-label">Pedidos Completados</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card stat-warning">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">${tiempoPromedio} min</div>
+                            <div class="stat-label">Tiempo Promedio</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card stat-info">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">${pedidosPendientes}</div>
+                            <div class="stat-label">Pedidos Pendientes</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card stat-danger">
+                        <div class="stat-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value">${calcularRetardos()}</div>
+                            <div class="stat-label">Pedidos con Retardo</div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('dashboardStats').innerHTML = statsHTML;
+                
+                // Actualizar gráfico de ventas por hora
+                actualizarGraficoVentas(cobrosPeriodo);
+                
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+                document.getElementById('dashboardStats').innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Error cargando estadísticas
+                    </div>
+                `;
+            }
+        }
+
+        function calcularRetardos() {
+            const ahora = new Date();
+            const todosPedidos = JSON.parse(localStorage.getItem('bermely_pedidos') || '[]');
+            
+            return todosPedidos.filter(pedido => {
+                if (pedido.estado === 'pendiente' || pedido.estado === 'preparacion') {
+                    const tiempoCreacion = new Date(pedido.horaCreacion);
+                    const minutosTranscurridos = (ahora - tiempoCreacion) / (1000 * 60);
+                    return minutosTranscurridos > 10; // Más de 10 minutos
+                }
+                return false;
+            }).length;
+        }
+
+        async function cargarWidgets() {
+            // Widget Cocina
+            const pedidosCocina = await obtenerPedidosPorArea('cocina');
+            const widgetCocinaHTML = `
+                <div class="widget-estado">
+                    <div class="estado-item">
+                        <span class="estado-label">Pendientes:</span>
+                        <span class="estado-valor">${pedidosCocina.filter(p => p.estado === 'pendiente').length}</span>
+                    </div>
+                    <div class="estado-item">
+                        <span class="estado-label">En preparación:</span>
+                        <span class="estado-valor">${pedidosCocina.filter(p => p.estado === 'preparacion').length}</span>
+                    </div>
+                    <div class="estado-item">
+                        <span class="estado-label">Listos hoy:</span>
+                        <span class="estado-valor">${pedidosCocina.filter(p => p.estado === 'listo' && esHoy(p.horaListo)).length}</span>
+                    </div>
+                    <div class="estado-item">
+                        <span class="estado-label">Con retardo:</span>
+                        <span class="estado-valor">${calcularRetardosArea(pedidosCocina)}</span>
+                    </div>
+                </div>
+                <div class="widget-acciones">
+                    <button class="btn btn-sm btn-primary" onclick="abrirTab('pedidos')">
+                        <i class="fas fa-eye"></i> Ver todos
+                    </button>
+                </div>
+            `;
+            document.getElementById('widgetCocina').innerHTML = widgetCocinaHTML;
+            
+            // Widget Cafetería
+            const pedidosCafeteria = await obtenerPedidosPorArea('cafeteria');
+            const widgetCafeteriaHTML = `
+                <div class="widget-estado">
+                    <div class="estado-item">
+                        <span class="estado-label">Pendientes:</span>
+                        <span class="estado-valor">${pedidosCafeteria.filter(p => p.estado === 'pendiente').length}</span>
+                    </div>
+                    <div class="estado-item">
+                        <span class="estado-label">En preparación:</span>
+                        <span class="estado-valor">${pedidosCafeteria.filter(p => p.estado === 'preparacion').length}</span>
+                    </div>
+                    <div class="estado-item">
+                        <span class="estado-label">Listos hoy:</span>
+                        <span class="estado-valor">${pedidosCafeteria.filter(p => p.estado === 'listo' && esHoy(p.horaListo)).length}</span>
+                    </div>
+                    <div class="estado-item">
+                        <span class="estado-label">Con retardo:</span>
+                        <span class="estado-valor">${calcularRetardosArea(pedidosCafeteria)}</span>
+                    </div>
+                </div>
+                <div class="widget-acciones">
+                    <button class="btn btn-sm btn-primary" onclick="abrirTab('pedidos')">
+                        <i class="fas fa-eye"></i> Ver todos
+                    </button>
+                </div>
+            `;
+            document.getElementById('widgetCafeteria').innerHTML = widgetCafeteriaHTML;
+            
+            // Widget Meseros
+            const usuarios = obtenerTodosUsuarios();
+            const meseros = usuarios.filter(u => u.rol === 'mesero');
+            const widgetMeserosHTML = `
+                <div class="meseros-lista">
+                    ${meseros.map(mesero => `
+                        <div class="mesero-item">
+                            <span class="mesero-nombre">${mesero.nombre}</span>
+                            <span class="mesero-turno">${mesero.turno || 'Sin turno'}</span>
+                        </div>
+                    `).join('')}
+                    ${meseros.length === 0 ? '<p class="text-muted">No hay meseros registrados</p>' : ''}
+                </div>
+            `;
+            document.getElementById('widgetMeseros').innerHTML = widgetMeserosHTML;
+            
+            // Widget Alertas
+            const alertas = generarAlertas();
+            document.getElementById('widgetAlertas').innerHTML = alertas;
+        }
+
+        function esHoy(fechaString) {
+            if (!fechaString) return false;
+            const fecha = new Date(fechaString);
+            const hoy = new Date();
+            return fecha.getDate() === hoy.getDate() && 
+                   fecha.getMonth() === hoy.getMonth() && 
+                   fecha.getFullYear() === hoy.getFullYear();
+        }
+
+        function calcularRetardosArea(pedidos) {
+            const ahora = new Date();
+            return pedidos.filter(pedido => {
+                if (pedido.estado === 'pendiente' || pedido.estado === 'preparacion') {
+                    const tiempoCreacion = new Date(pedido.horaCreacion);
+                    const minutosTranscurridos = (ahora - tiempoCreacion) / (1000 * 60);
+                    return minutosTranscurridos > 10;
+                }
+                return false;
+            }).length;
+        }
+
+        function generarAlertas() {
+            const alertas = [];
+            const ahora = new Date();
+            
+            // Verificar pedidos con retardo
+            const todosPedidos = JSON.parse(localStorage.getItem('bermely_pedidos') || '[]');
+            const pedidosRetardo = todosPedidos.filter(pedido => {
+                if (pedido.estado === 'pendiente' || pedido.estado === 'preparacion') {
+                    const tiempoCreacion = new Date(pedido.horaCreacion);
+                    const minutosTranscurridos = (ahora - tiempoCreacion) / (1000 * 60);
+                    return minutosTranscurridos > 10;
+                }
+                return false;
+            });
+            
+            if (pedidosRetardo.length > 0) {
+                alertas.push({
+                    tipo: 'danger',
+                    mensaje: `${pedidosRetardo.length} pedidos con más de 10 minutos de retardo`,
+                    icono: 'fas fa-exclamation-triangle'
+                });
+            }
+            
+            // Verificar espacios ocupados por mucho tiempo
+            const espacios = JSON.parse(localStorage.getItem('bermely_espacios') || '[]');
+            const espaciosLargos = espacios.filter(espacio => {
+                if (espacio.estado === 'ocupada' && espacio.horaInicio) {
+                    const tiempoInicio = new Date(espacio.horaInicio);
+                    const minutosTranscurridos = (ahora - tiempoInicio) / (1000 * 60);
+                    return minutosTranscurridos > 120; // Más de 2 horas
+                }
+                return false;
+            });
+            
+            if (espaciosLargos.length > 0) {
+                alertas.push({
+                    tipo: 'warning',
+                    mensaje: `${espaciosLargos.length} espacios ocupados por más de 2 horas`,
+                    icono: 'fas fa-clock'
+                });
+            }
+            
+            // Verificar productos agotados
+            const menu = JSON.parse(localStorage.getItem('bermely_menu') || '[]');
+            const productosNoDisponibles = menu.filter(p => !p.disponible);
+            
+            if (productosNoDisponibles.length > 0) {
+                alertas.push({
+                    tipo: 'info',
+                    mensaje: `${productosNoDisponibles.length} productos no disponibles`,
+                    icono: 'fas fa-utensils'
+                });
+            }
+            
+            // Generar HTML de alertas
+            if (alertas.length === 0) {
+                return '<p class="text-success"><i class="fas fa-check-circle"></i> Sin alertas</p>';
+            }
+            
+            return alertas.map(alerta => `
+                <div class="alerta-item alerta-${alerta.tipo}">
+                    <i class="${alerta.icono}"></i>
+                    <span>${alerta.mensaje}</span>
+                </div>
+            `).join('');
+        }
+
+        function actualizarGraficoVentas(cobros) {
+            const grafico = document.getElementById('graficoVentas');
+            
+            // Agrupar por hora
+            const ventasPorHora = {};
+            for (let i = 0; i < 24; i++) {
+                ventasPorHora[i] = 0;
+            }
+            
+            cobros.forEach(cobro => {
+                const hora = new Date(cobro.fecha).getHours();
+                ventasPorHora[hora] += cobro.total;
+            });
+            
+            // Crear gráfico simple con divs
+            let graficoHTML = '<div class="grafico-barras">';
+            const maxVenta = Math.max(...Object.values(ventasPorHora));
+            
+            for (let i = 0; i < 24; i++) {
+                const venta = ventasPorHora[i];
+                const altura = maxVenta > 0 ? (venta / maxVenta * 100) : 0;
+                
+                graficoHTML += `
+                    <div class="barra-hora">
+                        <div class="barra-valor" style="height: ${altura}%"></div>
+                        <div class="barra-label">${i}:00</div>
+                        <div class="barra-tooltip">$${venta.toFixed(2)}</div>
+                    </div>
+                `;
+            }
+            
+            graficoHTML += '</div>';
+            grafico.innerHTML = graficoHTML;
+        }
+
+        function actualizarDashboard() {
+            cargarDashboard();
+        }
+
+        // ===== ESPACIOS =====
+        async function cargarEspaciosAdmin() {
+            const espacios = await obtenerEspacios();
+            actualizarEstadisticasEspacios(espacios);
+            renderizarEspaciosAdmin(espacios);
+        }
+
+        function actualizarEstadisticasEspacios(espacios) {
+            const libres = espacios.filter(e => e.estado === 'libre').length;
+            const ocupadas = espacios.filter(e => e.estado === 'ocupada').length;
+            const preparacion = espacios.filter(e => e.estado === 'preparacion').length;
+            const listo = espacios.filter(e => e.estado === 'listo').length;
+            const porCobrar = espacios.filter(e => e.estado === 'porcobrar').length;
+            
+            document.getElementById('estLibres').textContent = libres;
+            document.getElementById('estOcupadas').textContent = ocupadas;
+            document.getElementById('estPreparacion').textContent = preparacion;
+            document.getElementById('estListo').textContent = listo;
+            document.getElementById('estPorCobrar').textContent = porCobrar;
+        }
+
+        function renderizarEspaciosAdmin(espacios) {
+            const grid = document.getElementById('espaciosAdminGrid');
+            
+            grid.innerHTML = espacios.map(espacio => {
+                const tiempo = espacio.horaInicio ? 
+                    Math.round((new Date() - new Date(espacio.horaInicio)) / (1000 * 60)) : 0;
+                
+                let accionesHTML = '';
+                
+                switch(espacio.estado) {
+                    case 'libre':
+                        accionesHTML = `
+                            <button class="btn btn-sm btn-success" onclick="asignarClienteAdmin('${espacio.id}')">
+                                <i class="fas fa-user-plus"></i> Asignar
+                            </button>
+                        `;
+                        break;
+                    case 'ocupada':
+                    case 'preparacion':
+                    case 'listo':
+                        accionesHTML = `
+                            <button class="btn btn-sm btn-primary" onclick="verDetallesEspacio('${espacio.id}')">
+                                <i class="fas fa-eye"></i> Ver
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="forzarCobroEspacio('${espacio.id}')">
+                                <i class="fas fa-cash-register"></i> Cobrar
+                            </button>
+                        `;
+                        break;
+                    case 'porcobrar':
+                        accionesHTML = `
+                            <button class="btn btn-sm btn-danger" onclick="forzarCobroEspacio('${espacio.id}')">
+                                <i class="fas fa-cash-register"></i> Cobrar
+                            </button>
+                        `;
+                        break;
+                }
+                
+                return `
+                    <div class="espacio-admin-card ${espacio.estado}">
+                        <div class="espacio-admin-header">
+                            <div class="espacio-admin-nombre">${espacio.nombre}</div>
+                            <div class="espacio-admin-estado badge-${espacio.estado}">
+                                ${espacio.estado.toUpperCase()}
+                            </div>
+                        </div>
+                        
+                        <div class="espacio-admin-info">
+                            ${espacio.cliente ? `
+                                <div class="espacio-admin-cliente">${espacio.cliente}</div>
+                                <div class="espacio-admin-mesero">Mesero: ${espacio.mesero || 'N/A'}</div>
+                                ${espacio.comensales ? `
+                                    <div class="espacio-admin-comensales">${espacio.comensales} personas</div>
+                                ` : ''}
+                            ` : '<div class="espacio-admin-cliente">Libre</div>'}
+                        </div>
+                        
+                        <div class="espacio-admin-detalles">
+                            ${espacio.total ? `
+                                <div class="espacio-admin-total">Total: $${espacio.total.toFixed(2)}</div>
+                            ` : ''}
+                            ${tiempo > 0 ? `
+                                <div class="espacio-admin-tiempo">
+                                    <i class="fas fa-clock"></i> ${tiempo} min
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="espacio-admin-acciones">
+                            ${accionesHTML}
+                            <button class="btn btn-sm btn-secondary" onclick="liberarEspacioAdmin('${espacio.id}')">
+                                <i class="fas fa-broom"></i> Liberar
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function liberarTodasMesas() {
+            if (!confirm('¿Estás seguro de que quieres liberar TODAS las mesas? Esto cerrará todas las cuentas pendientes.')) {
+                return;
+            }
+            
+            const espacios = await obtenerEspacios();
+            let liberadas = 0;
+            
+            for (const espacio of espacios) {
+                if (espacio.estado !== 'libre') {
+                    await actualizarEstadoEspacio(espacio.id, {
+                        estado: 'libre',
+                        cliente: null,
+                        comensales: null,
+                        mesero: null,
+                        pedido: null,
+                        total: null,
+                        horaInicio: null
+                    });
+                    liberadas++;
+                }
+            }
+            
+            alert(`Se liberaron ${liberadas} espacios`);
+            cargarEspaciosAdmin();
+        }
+
+        function asignarClienteAdmin(espacioId) {
+            // Similar a la función del mesero pero con más opciones
+            const nombre = prompt('Nombre del cliente:');
+            if (!nombre) return;
+            
+            const comensales = prompt('Número de comensales:', '2');
+            const mesero = prompt('Nombre del mesero:', usuarioActual?.nombre || 'Admin');
+            
+            actualizarEstadoEspacio(espacioId, {
+                estado: 'ocupada',
+                cliente: nombre,
+                comensales: parseInt(comensales) || 2,
+                mesero: mesero,
+                horaInicio: new Date().toISOString(),
+                pedido: { items: [], total: 0 }
+            }).then(() => {
+                cargarEspaciosAdmin();
+            });
+        }
+
+        function verDetallesEspacio(espacioId) {
+            obtenerEspacioPorId(espacioId).then(espacio => {
+                if (!espacio) return;
+                
+                let detallesHTML = `
+                    <h4>${espacio.nombre} - ${espacio.cliente || 'Libre'}</h4>
+                    <div class="detalles-lista">
+                        <div class="detalle-item">
+                            <strong>Estado:</strong> ${espacio.estado}
+                        </div>
+                        ${espacio.mesero ? `
+                            <div class="detalle-item">
+                                <strong>Mesero:</strong> ${espacio.mesero}
+                            </div>
+                        ` : ''}
+                        ${espacio.comensales ? `
+                            <div class="detalle-item">
+                                <strong>Comensales:</strong> ${espacio.comensales}
+                            </div>
+                        ` : ''}
+                        ${espacio.horaInicio ? `
+                            <div class="detalle-item">
+                                <strong>Hora inicio:</strong> ${new Date(espacio.horaInicio).toLocaleString()}
+                            </div>
+                        ` : ''}
+                        ${espacio.total ? `
+                            <div class="detalle-item">
+                                <strong>Total cuenta:</strong> $${espacio.total.toFixed(2)}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                if (espacio.pedido && espacio.pedido.items && espacio.pedido.items.length > 0) {
+                    detallesHTML += `
+                        <h5>Pedido actual:</h5>
+                        <div class="pedido-detalle">
+                            ${espacio.pedido.items.map(item => `
+                                <div class="item-detalle">
+                                    ${item.cantidad}x ${item.nombre} - $${item.subtotal.toFixed(2)}
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                // Mostrar en modal
+                document.getElementById('modalDetalleCobroBody').innerHTML = detallesHTML;
+                abrirModal('modalDetalleCobro');
+            });
+        }
+
+        async function forzarCobroEspacio(espacioId) {
+            const espacio = await obtenerEspacioPorId(espacioId);
+            if (!espacio || !espacio.total || espacio.total === 0) {
+                alert('No hay cuenta para cobrar en este espacio');
+                return;
+            }
+            
+            const total = espacio.total;
+            const iva = total * 0.16;
+            const totalConIva = total + iva;
+            
+            const metodo = prompt('Método de pago (efectivo/tarjeta/transferencia):', 'efectivo');
+            if (!metodo || !['efectivo', 'tarjeta', 'transferencia'].includes(metodo)) {
+                alert('Método de pago inválido');
+                return;
+            }
+            
+            // Registrar cobro
+            const cobro = {
+                espacioId: espacioId,
+                total: totalConIva,
+                subtotal: total,
+                iva: iva,
+                metodo: metodo,
+                datos: { forzado: true },
+                fecha: new Date().toISOString(),
+                mesero: usuarioActual?.nombre || 'Admin'
+            };
+            
+            await registrarCobro(cobro);
+            
+            // Liberar espacio
+            await actualizarEstadoEspacio(espacioId, {
+                estado: 'libre',
+                cliente: null,
+                comensales: null,
+                mesero: null,
+                pedido: null,
+                total: null,
+                horaInicio: null
+            });
+            
+            alert(`Cobro forzado realizado: $${totalConIva.toFixed(2)}`);
+            cargarEspaciosAdmin();
+        }
+
+        async function liberarEspacioAdmin(espacioId) {
+            if (!confirm('¿Liberar este espacio? Se perderá cualquier pedido pendiente.')) {
+                return;
+            }
+            
+            await actualizarEstadoEspacio(espacioId, {
+                estado: 'libre',
+                cliente: null,
+                comensales: null,
+                mesero: null,
+                pedido: null,
+                total: null,
+                horaInicio: null
+            });
+            
+            cargarEspaciosAdmin();
+        }
+
+        // ===== CAJA =====
+        async function cargarCaja() {
+            const filtro = document.getElementById('filtroCaja').value;
+            const ahora = new Date();
+            let fechaInicio, fechaFin;
+            
+            if (filtro === 'personalizado') {
+                abrirModal('modalFechaPersonalizada');
+                return;
+            }
+            
+            switch(filtro) {
+                case 'hoy':
+                    fechaInicio = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+                    fechaFin = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), 23, 59, 59);
+                    break;
+                case 'ayer':
+                    const ayer = new Date(ahora);
+                    ayer.setDate(ahora.getDate() - 1);
+                    fechaInicio = new Date(ayer.getFullYear(), ayer.getMonth(), ayer.getDate());
+                    fechaFin = new Date(ayer.getFullYear(), ayer.getMonth(), ayer.getDate(), 23, 59, 59);
+                    break;
+                case 'semana':
+                    const diaSemana = ahora.getDay();
+                    const diff = ahora.getDate() - diaSemana + (diaSemana === 0 ? -6 : 1);
+                    fechaInicio = new Date(ahora.setDate(diff));
+                    fechaInicio.setHours(0, 0, 0, 0);
+                    fechaFin = new Date();
+                    break;
+                case 'mes':
+                    fechaInicio = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
+                    fechaFin = new Date(ahora.getFullYear(), ahora.getMonth() + 1, 0, 23, 59, 59);
+                    break;
+            }
+            
+            await cargarDatosCaja(fechaInicio, fechaFin);
+        }
+
+        async function cargarDatosCaja(fechaInicio, fechaFin) {
+            try {
+                const todosCobros = JSON.parse(localStorage.getItem('bermely_cobros') || '[]');
+                const cobrosFiltrados = todosCobros.filter(cobro => {
+                    const fechaCobro = new Date(cobro.fecha);
+                    return fechaCobro >= fechaInicio && fechaCobro <= fechaFin;
+                });
+                
+                // Calcular totales por método
+                const efectivo = cobrosFiltrados.filter(c => c.metodo === 'efectivo').reduce((sum, c) => sum + c.total, 0);
+                const tarjeta = cobrosFiltrados.filter(c => c.metodo === 'tarjeta').reduce((sum, c) => sum + c.total, 0);
+                const transferencia = cobrosFiltrados.filter(c => c.metodo === 'transferencia').reduce((sum, c) => sum + c.total, 0);
+                const total = efectivo + tarjeta + transferencia;
+                
+                // Actualizar resumen
+                document.getElementById('cajaEfectivo').textContent = `$${efectivo.toFixed(2)}`;
+                document.getElementById('cajaTarjeta').textContent = `$${tarjeta.toFixed(2)}`;
+                document.getElementById('cajaTransferencia').textContent = `$${transferencia.toFixed(2)}`;
+                document.getElementById('cajaTotal').textContent = `$${total.toFixed(2)}`;
+                
+                // Actualizar tabla
+                const cuerpoTabla = document.getElementById('cuerpoTablaCaja');
+                cuerpoTabla.innerHTML = cobrosFiltrados.map(cobro => {
+                    const fecha = new Date(cobro.fecha);
+                    
+                    return `
+                        <tr>
+                            <td>${fecha.toLocaleTimeString('es-MX', {hour: '2-digit', minute:'2-digit'})}</td>
+                            <td>${cobro.espacioId}</td>
+                            <td>${cobro.cliente || 'N/A'}</td>
+                            <td>$${cobro.total.toFixed(2)}</td>
+                            <td>
+                                <span class="metodo-pago metodo-${cobro.metodo}">
+                                    ${cobro.metodo}
+                                </span>
+                            </td>
+                            <td>${cobro.mesero}</td>
+                            <td>
+                                <button class="btn btn-sm btn-info" onclick="verDetalleCobro('${cobro.id}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="eliminarCobro('${cobro.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                if (cobrosFiltrados.length === 0) {
+                    cuerpoTabla.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">
+                                No hay cobros en el período seleccionado
+                            </td>
+                        </tr>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('Error cargando caja:', error);
+            }
+        }
+
+        function aplicarFechaPersonalizada() {
+            const fechaInicio = document.getElementById('fechaInicio').value;
+            const fechaFin = document.getElementById('fechaFin').value;
+            
+            if (!fechaInicio || !fechaFin) {
+                alert('Selecciona ambas fechas');
+                return;
+            }
+            
+            const inicio = new Date(fechaInicio + 'T00:00:00');
+            const fin = new Date(fechaFin + 'T23:59:59');
+            
+            if (inicio > fin) {
+                alert('La fecha inicio no puede ser mayor a la fecha fin');
+                return;
+            }
+            
+            fechaPersonalizada = { inicio, fin };
+            cargarDatosCaja(inicio, fin);
+            cerrarModal('modalFechaPersonalizada');
+        }
+
+        function verDetalleCobro(cobroId) {
+            const todosCobros = JSON.parse(localStorage.getItem('bermely_cobros') || '[]');
+            const cobro = todosCobros.find(c => c.id === cobroId);
+            
+            if (!cobro) {
+                alert('Cobro no encontrado');
+                return;
+            }
+            
+            const fecha = new Date(cobro.fecha);
+            
+            const detalleHTML = `
+                <h4>Detalles del Cobro</h4>
+                <div class="detalle-cobro">
+                    <div class="detalle-item">
+                        <strong>Fecha:</strong> ${fecha.toLocaleString()}
+                    </div>
+                    <div class="detalle-item">
+                        <strong>Espacio:</strong> ${cobro.espacioId}
+                    </div>
+                    <div class="detalle-item">
+                        <strong>Cliente:</strong> ${cobro.cliente || 'N/A'}
+                    </div>
+                    <div class="detalle-item">
+                        <strong>Mesero:</strong> ${cobro.mesero}
+                    </div>
+                    <div class="detalle-item">
+                        <strong>Método de pago:</strong> ${cobro.metodo}
+                    </div>
+                    <div class="detalle-item">
+                        <strong>Subtotal:</strong> $${cobro.subtotal.toFixed(2)}
+                    </div>
+                    <div class="detalle-item">
+                        <strong>IVA (16%):</strong> $${cobro.iva.toFixed(2)}
+                    </div>
+                    <div class="detalle-item total">
+                        <strong>Total:</strong> $${cobro.total.toFixed(2)}
+                    </div>
+                    ${cobro.datos ? `
+                        <div class="detalle-item">
+                            <strong>Detalles adicionales:</strong>
+                            <pre>${JSON.stringify(cobro.datos, null, 2)}</pre>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            document.getElementById('modalDetalleCobroBody').innerHTML = detalleHTML;
+            abrirModal('modalDetalleCobro');
+        }
+
+        async function eliminarCobro(cobroId) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este cobro? Esta acción no se puede deshacer.')) {
+                return;
+            }
+            
+            const todosCobros = JSON.parse(localStorage.getItem('bermely_cobros') || '[]');
+            const nuevosCobros = todosCobros.filter(c => c.id !== cobroId);
+            
+            localStorage.setItem('bermely_cobros', JSON.stringify(nuevosCobros));
+            
+            alert('Cobro eliminado');
+            cargarCaja();
+        }
+
+        function abrirCorteCaja() {
+            // Implementar corte de caja
+            alert('Función de corte de caja en desarrollo');
+        }
+
+        function exportarCaja() {
+            // Implementar exportación
+            alert('Función de exportación en desarrollo');
+        }
+
+        // ===== PEDIDOS =====
+        async function cargarPedidosAdmin() {
+            const filtroEstado = document.getElementById('filtroPedidos').value;
+            const filtroArea = document.getElementById('filtroAreaPedidos').value;
+            
+            const todosPedidos = JSON.parse(localStorage.getItem('bermely_pedidos') || '[]');
+            
+            let pedidosFiltrados = todosPedidos;
+            
+            // Filtrar por estado
+            if (filtroEstado !== 'todos') {
+                pedidosFiltrados = pedidosFiltrados.filter(p => p.estado === filtroEstado);
+            }
+            
+            // Filtrar por área
+            if (filtroArea !== 'todas') {
+                pedidosFiltrados = pedidosFiltrados.filter(p => p.area === filtroArea);
+            }
+            
+            // Ordenar por fecha más reciente
+            pedidosFiltrados.sort((a, b) => new Date(b.horaCreacion) - new Date(a.horaCreacion));
+            
+            renderizarPedidosAdmin(pedidosFiltrados);
+        }
+
+        function renderizarPedidosAdmin(pedidos) {
+            const container = document.getElementById('pedidosAdminContainer');
+            
+            if (pedidos.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-clipboard-list"></i>
+                        <p>No hay pedidos</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = pedidos.map(pedido => {
+                const fechaCreacion = new Date(pedido.horaCreacion);
+                const ahora = new Date();
+                const minutosTranscurridos = Math.floor((ahora - fechaCreacion) / (1000 * 60));
+                
+                let tiempoClase = '';
+                if (minutosTranscurridos > 10) {
+                    tiempoClase = 'tiempo-retardo';
+                } else if (minutosTranscurridos > 5) {
+                    tiempoClase = 'tiempo-alerta';
+                }
+                
+                return `
+                    <div class="pedido-admin-card ${pedido.estado}">
+                        <div class="pedido-admin-header">
+                            <div class="pedido-admin-info">
+                                <h4>${pedido.espacioNombre} - ${pedido.cliente}</h4>
+                                <div class="pedido-admin-meta">
+                                    <span class="meta-item">
+                                        <i class="fas fa-${pedido.area === 'cocina' ? 'fire' : 'coffee'}"></i>
+                                        ${pedido.area === 'cocina' ? 'Cocina' : 'Cafetería'}
+                                    </span>
+                                    <span class="meta-item">
+                                        <i class="fas fa-user"></i>
+                                        ${pedido.mesero}
+                                    </span>
+                                    <span class="meta-item">
+                                        <i class="fas fa-clock"></i>
+                                        ${fechaCreacion.toLocaleTimeString('es-MX', {hour: '2-digit', minute:'2-digit'})}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="pedido-admin-estado">
+                                <span class="estado-badge badge-${pedido.estado}">
+                                    ${pedido.estado.toUpperCase()}
+                                </span>
+                                <div class="pedido-admin-tiempo ${tiempoClase}">
+                                    ${minutosTranscurridos} min
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="pedido-admin-items">
+                            <div class="items-count">
+                                ${pedido.items.length} items - Total: $${pedido.total.toFixed(2)}
+                            </div>
+                            <div class="pedido-admin-acciones">
+                                <button class="btn btn-sm btn-info" onclick="verDetallePedidoAdmin('${pedido.id}')">
+                                    <i class="fas fa-eye"></i> Ver
+                                </button>
+                                ${pedido.estado === 'pendiente' ? `
+                                    <button class="btn btn-sm btn-warning" onclick="marcarEnPreparacion('${pedido.id}')">
+                                        <i class="fas fa-play"></i> Preparar
+                                    </button>
+                                ` : ''}
+                                ${pedido.estado === 'preparacion' ? `
+                                    <button class="btn btn-sm btn-success" onclick="marcarListoAdmin('${pedido.id}')">
+                                        <i class="fas fa-check"></i> Listo
+                                    </button>
+                                ` : ''}
+                                <button class="btn btn-sm btn-danger" onclick="eliminarPedidoAdmin('${pedido.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function verDetallePedidoAdmin(pedidoId) {
+            const pedido = await obtenerPedido(pedidoId);
+            if (!pedido) {
+                alert('Pedido no encontrado');
+                return;
+            }
+            
+            const fechaCreacion = new Date(pedido.horaCreacion);
+            const tiempoTranscurrido = Math.floor((new Date() - fechaCreacion) / (1000 * 60));
+            
+            const detalleHTML = `
+                <h4>${pedido.espacioNombre} - ${pedido.cliente}</h4>
+                <div class="detalle-pedido-info">
+                    <div class="info-item">
+                        <strong>Área:</strong> ${pedido.area === 'cocina' ? '🍳 Cocina' : '☕ Cafetería'}
+                    </div>
+                    <div class="info-item">
+                        <strong>Mesero:</strong> ${pedido.mesero}
+                    </div>
+                    <div class="info-item">
+                        <strong>Hora creación:</strong> ${fechaCreacion.toLocaleString()}
+                    </div>
+                    <div class="info-item">
+                        <strong>Tiempo transcurrido:</strong> ${tiempoTranscurrido} minutos
+                    </div>
+                    <div class="info-item">
+                        <strong>Estado:</strong> <span class="badge-${pedido.estado}">${pedido.estado.toUpperCase()}</span>
+                    </div>
+                </div>
+                
+                <h5>Items del pedido:</h5>
+                <div class="detalle-pedido-items">
+                    ${pedido.items.map((item, index) => `
+                        <div class="item-detalle-pedido ${index < pedido.items.length - 1 ? 'border-bottom' : ''}">
+                            <div class="item-header">
+                                <span class="item-nombre">${item.cantidad}x ${item.nombre}</span>
+                                <span class="item-subtotal">$${item.subtotal.toFixed(2)}</span>
+                            </div>
+                            ${item.extras && item.extras.length > 0 ? `
+                                <div class="item-extras">
+                                    <strong>Extras:</strong>
+                                    ${item.extras.map(extra => extra.nombre).join(', ')}
+                                </div>
+                            ` : ''}
+                            ${item.comentario ? `
+                                <div class="item-comentario">
+                                    <strong><i class="fas fa-sticky-note"></i> Comentario:</strong>
+                                    ${item.comentario}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="detalle-pedido-total">
+                    <strong>Total:</strong> $${pedido.total.toFixed(2)}
+                </div>
+                
+                ${pedido.notaEspecial ? `
+                    <div class="detalle-pedido-nota">
+                        <strong><i class="fas fa-sticky-note"></i> Nota especial:</strong>
+                        ${pedido.notaEspecial}
+                    </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('modalDetallePedidoBody').innerHTML = detalleHTML;
+            abrirModal('modalDetallePedido');
+        }
+
+        async function marcarEnPreparacion(pedidoId) {
+            await actualizarEstadoPedido(pedidoId, {
+                estado: 'preparacion',
+                horaPreparacion: new Date().toISOString()
+            });
+            cargarPedidosAdmin();
+        }
+
+        async function marcarListoAdmin(pedidoId) {
+            await actualizarEstadoPedido(pedidoId, {
+                estado: 'listo',
+                horaListo: new Date().toISOString()
+            });
+            cargarPedidosAdmin();
+        }
+
+        async function eliminarPedidoAdmin(pedidoId) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este pedido? Esta acción no se puede deshacer.')) {
+                return;
+            }
+            
+            const todosPedidos = JSON.parse(localStorage.getItem('bermely_pedidos') || '[]');
+            const nuevosPedidos = todosPedidos.filter(p => p.id !== pedidoId);
+            
+            localStorage.setItem('bermely_pedidos', JSON.stringify(nuevosPedidos));
+            
+            alert('Pedido eliminado');
+            cargarPedidosAdmin();
+        }
+
+        async function obtenerPedidosHoy() {
+            const hoy = new Date();
+            const inicioDia = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+            const finDia = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
+            
+            const todosPedidos = JSON.parse(localStorage.getItem('bermely_pedidos') || '[]');
+            return todosPedidos.filter(pedido => {
+                const fechaPedido = new Date(pedido.horaCreacion);
+                return fechaPedido >= inicioDia && fechaPedido <= finDia;
+            });
+        }
+
+        // ===== MENÚ =====
+        async function cargarMenuAdmin() {
+            const menu = await obtenerMenuCompleto();
+            actualizarEstadisticasMenu(menu);
+            renderizarTablaMenu(menu);
+            cargarFiltrosCategorias(menu);
+        }
+
+        function actualizarEstadisticasMenu(menu) {
+            const total = menu.length;
+            const cocina = menu.filter(p => p.area === 'cocina').length;
+            const cafeteria = menu.filter(p => p.area === 'cafeteria').length;
+            const disponible = menu.filter(p => p.disponible).length;
+            const precioPromedio = menu.reduce((sum, p) => sum + p.precio, 0) / total || 0;
+            
+            document.getElementById('menuTotal').textContent = total;
+            document.getElementById('menuCocina').textContent = cocina;
+            document.getElementById('menuCafeteria').textContent = cafeteria;
+            document.getElementById('menuDisponible').textContent = disponible;
+            document.getElementById('menuPromedio').textContent = `$${precioPromedio.toFixed(2)}`;
+        }
+
+        function cargarFiltrosCategorias(menu) {
+            const categorias = [...new Set(menu.map(p => p.categoria))];
+            const select = document.getElementById('filtroCategoriaMenu');
+            
+            select.innerHTML = `
+                <option value="todas">Todas las categorías</option>
+                ${categorias.map(cat => `
+                    <option value="${cat}">${cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+                `).join('')}
+            `;
+        }
+
+        function renderizarTablaMenu(menu) {
+            const cuerpo = document.getElementById('cuerpoTablaMenu');
+            
+            cuerpo.innerHTML = menu.map(producto => {
+                const iconoArea = producto.area === 'cocina' ? '🍳' : '☕';
+                const extrasCount = producto.extras ? producto.extras.length : 0;
+                
+                return `
+                    <tr>
+                        <td>
+                            <strong>${producto.nombre}</strong>
+                            ${producto.descripcion ? `<br><small class="text-muted">${producto.descripcion}</small>` : ''}
+                        </td>
+                        <td>${producto.categoria}</td>
+                        <td>
+                            <span class="badge ${producto.area === 'cocina' ? 'badge-cocina' : 'badge-cafeteria'}">
+                                ${iconoArea} ${producto.area}
+                            </span>
+                        </td>
+                        <td>$${producto.precio.toFixed(2)}</td>
+                        <td>
+                            ${extrasCount > 0 ? 
+                                `<span class="badge badge-info">${extrasCount} extras</span>` : 
+                                '<span class="text-muted">Sin extras</span>'
+                            }
+                        </td>
+                        <td>
+                            ${producto.disponible ? 
+                                '<span class="badge badge-success">Disponible</span>' : 
+                                '<span class="badge badge-danger">No disponible</span>'
+                            }
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-info" onclick="editarProducto('${producto.id}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="eliminarProducto('${producto.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button class="btn btn-sm btn-warning" onclick="toggleDisponibleProducto('${producto.id}', ${!producto.disponible})">
+                                <i class="fas fa-power-off"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            if (menu.length === 0) {
+                cuerpo.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            No hay productos en el menú
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function filtrarMenuAdmin() {
+            const busqueda = document.getElementById('buscarMenuAdmin').value.toLowerCase();
+            const area = document.getElementById('filtroAreaMenu').value;
+            const categoria = document.getElementById('filtroCategoriaMenu').value;
+            const disponible = document.getElementById('filtroDisponibleMenu').value;
+            
+            obtenerMenuCompleto().then(menu => {
+                let filtrados = menu;
+                
+                // Filtrar por búsqueda
+                if (busqueda) {
+                    filtrados = filtrados.filter(p => 
+                        p.nombre.toLowerCase().includes(busqueda) ||
+                        p.descripcion?.toLowerCase().includes(busqueda)
+                    );
+                }
+                
+                // Filtrar por área
+                if (area !== 'todas') {
+                    filtrados = filtrados.filter(p => p.area === area);
+                }
+                
+                // Filtrar por categoría
+                if (categoria !== 'todas') {
+                    filtrados = filtrados.filter(p => p.categoria === categoria);
+                }
+                
+                // Filtrar por disponibilidad
+                if (disponible !== 'todos') {
+                    const disponibleBool = disponible === 'disponible';
+                    filtrados = filtrados.filter(p => p.disponible === disponibleBool);
+                }
+                
+                renderizarTablaMenu(filtrados);
+                actualizarEstadisticasMenu(filtrados);
+            });
+        }
+
+        function abrirModalNuevoProducto() {
+            document.getElementById('formNuevoProducto').reset();
+            document.getElementById('listaExtras').innerHTML = '';
+            abrirModal('modalNuevoProducto');
+        }
+
+        function agregarExtra() {
+            const lista = document.getElementById('listaExtras');
+            const id = Date.now();
+            
+            lista.innerHTML += `
+                <div class="extra-form" id="extra-${id}">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <input type="text" class="form-control" placeholder="Nombre del extra" data-extra-nombre>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <input type="number" class="form-control" placeholder="Precio" step="0.01" min="0" data-extra-precio>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <button type="button" class="btn btn-danger" onclick="eliminarExtra(${id})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function eliminarExtra(id) {
+            const extra = document.getElementById(`extra-${id}`);
+            if (extra) {
+                extra.remove();
+            }
+        }
+
+        async function guardarNuevoProducto() {
+            const nombre = document.getElementById('productoNombre').value.trim();
+            const precio = parseFloat(document.getElementById('productoPrecio').value);
+            const categoria = document.getElementById('productoCategoria').value;
+            const area = document.getElementById('productoArea').value;
+            const descripcion = document.getElementById('productoDescripcion').value.trim();
+            const disponible = document.getElementById('productoDisponible').checked;
+            const requiereComentario = document.getElementById('productoRequiereComentario').checked;
+            const express = document.getElementById('productoExpress').checked;
+            const destacado = document.getElementById('productoDestacado').checked;
+            
+            if (!nombre || !precio || !categoria || !area) {
+                alert('Completa todos los campos requeridos');
+                return;
+            }
+            
+            // Recoger extras
+            const extras = [];
+            document.querySelectorAll('.extra-form').forEach(extraForm => {
+                const nombreExtra = extraForm.querySelector('[data-extra-nombre]').value.trim();
+                const precioExtra = parseFloat(extraForm.querySelector('[data-extra-precio]').value);
+                
+                if (nombreExtra && precioExtra) {
+                    extras.push({
+                        id: `extra-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                        nombre: nombreExtra,
+                        precio: precioExtra
+                    });
+                }
+            });
+            
+            const nuevoProducto = {
+                id: `producto-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                nombre: nombre,
+                precio: precio,
+                categoria: categoria,
+                area: area,
+                descripcion: descripcion || null,
+                disponible: disponible,
+                requiereComentario: requiereComentario,
+                express: express,
+                destacado: destacado,
+                extras: extras.length > 0 ? extras : null
+            };
+            
+            // Guardar en localStorage
+            const menu = JSON.parse(localStorage.getItem('bermely_menu') || '[]');
+            menu.push(nuevoProducto);
+            localStorage.setItem('bermely_menu', JSON.stringify(menu));
+            
+            // Actualizar sistema
+            if (sistemaMenu) {
+                sistemaMenu.menu = menu;
+                sistemaMenu.extraerCategorias();
+            }
+            
+            alert('Producto creado exitosamente');
+            cerrarModal('modalNuevoProducto');
+            cargarMenuAdmin();
+        }
+
+        async function editarProducto(productoId) {
+            const menu = JSON.parse(localStorage.getItem('bermely_menu') || '[]');
+            const producto = menu.find(p => p.id === productoId);
+            
+            if (!producto) {
+                alert('Producto no encontrado');
+                return;
+            }
+            
+            const editarHTML = `
+                <h4>Editar Producto: ${producto.nombre}</h4>
+                <form id="formEditarProducto">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="editProductoNombre">Nombre *</label>
+                            <input type="text" id="editProductoNombre" class="form-control" value="${producto.nombre}" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="editProductoPrecio">Precio *</label>
+                            <input type="number" id="editProductoPrecio" class="form-control" value="${producto.precio}" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="editProductoCategoria">Categoría</label>
+                            <select id="editProductoCategoria" class="form-control">
+                                <option value="tacos" ${producto.categoria === 'tacos' ? 'selected' : ''}>Tacos</option>
+                                <option value="hamburguesas" ${producto.categoria === 'hamburguesas' ? 'selected' : ''}>Hamburguesas</option>
+                                <option value="crepas" ${producto.categoria === 'crepas' ? 'selected' : ''}>Crepas</option>
+                                <option value="bebidas" ${producto.categoria === 'bebidas' ? 'selected' : ''}>Bebidas</option>
+                                <option value="postres" ${producto.categoria === 'postres' ? 'selected' : ''}>Postres</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="editProductoArea">Área</label>
+                            <select id="editProductoArea" class="form-control">
+                                <option value="cocina" ${producto.area === 'cocina' ? 'selected' : ''}>Cocina</option>
+                                <option value="cafeteria" ${producto.area === 'cafeteria' ? 'selected' : ''}>Cafetería</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editProductoDescripcion">Descripción</label>
+                        <textarea id="editProductoDescripcion" class="form-control" rows="2">${producto.descripcion || ''}</textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <div class="form-check">
+                                <input type="checkbox" id="editProductoDisponible" class="form-check-input" ${producto.disponible ? 'checked' : ''}>
+                                <label class="form-check-label" for="editProductoDisponible">Disponible</label>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <div class="form-check">
+                                <input type="checkbox" id="editProductoRequiereComentario" class="form-check-input" ${producto.requiereComentario ? 'checked' : ''}>
+                                <label class="form-check-label" for="editProductoRequiereComentario">Requiere comentario</label>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <div class="form-check">
+                                <input type="checkbox" id="editProductoExpress" class="form-check-input" ${producto.express ? 'checked' : ''}>
+                                <label class="form-check-label" for="editProductoExpress">Venta Express</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="extras-section">
+                        <h5>Extras</h5>
+                        <div id="editListaExtras">
+                            ${producto.extras && producto.extras.length > 0 ? 
+                                producto.extras.map((extra, index) => `
+                                    <div class="extra-form" id="edit-extra-${index}">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <input type="text" class="form-control" value="${extra.nombre}" data-extra-nombre>
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <input type="number" class="form-control" value="${extra.precio}" step="0.01" min="0" data-extra-precio>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <button type="button" class="btn btn-danger" onclick="eliminarEditExtra(${index})">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('') : 
+                                '<p>No hay extras configurados</p>'
+                            }
+                        </div>
+                        <button type="button" class="btn btn-sm btn-secondary" onclick="agregarEditExtra()">
+                            <i class="fas fa-plus"></i> Agregar Extra
+                        </button>
+                    </div>
+                </form>
+            `;
+            
+            document.getElementById('modalEditarProductoBody').innerHTML = editarHTML;
+            abrirModal('modalEditarProducto');
+            
+            // Guardar referencia al producto
+            window.productoEditando = producto;
+            window.editExtrasCount = producto.extras ? producto.extras.length : 0;
+        }
+
+        function agregarEditExtra() {
+            const lista = document.getElementById('editListaExtras');
+            const id = window.editExtrasCount++;
+            
+            lista.innerHTML += `
+                <div class="extra-form" id="edit-extra-${id}">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <input type="text" class="form-control" placeholder="Nombre del extra" data-extra-nombre>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <input type="number" class="form-control" placeholder="Precio" step="0.01" min="0" data-extra-precio>
+                        </div>
+                        <div class="form-group col-md-2">
+                            <button type="button" class="btn btn-danger" onclick="eliminarEditExtra(${id})">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function eliminarEditExtra(id) {
+            const extra = document.getElementById(`edit-extra-${id}`);
+            if (extra) {
+                extra.remove();
+            }
+        }
+
+        async function guardarEdicionProducto() {
+            if (!window.productoEditando) return;
+            
+            const nombre = document.getElementById('editProductoNombre').value.trim();
+            const precio = parseFloat(document.getElementById('editProductoPrecio').value);
+            const categoria = document.getElementById('editProductoCategoria').value;
+            const area = document.getElementById('editProductoArea').value;
+            const descripcion = document.getElementById('editProductoDescripcion').value.trim();
+            const disponible = document.getElementById('editProductoDisponible').checked;
+            const requiereComentario = document.getElementById('editProductoRequiereComentario').checked;
+            const express = document.getElementById('editProductoExpress').checked;
+            
+            if (!nombre || !precio || !categoria || !area) {
+                alert('Completa todos los campos requeridos');
+                return;
+            }
+            
+            // Recoger extras
+            const extras = [];
+            document.querySelectorAll('#editListaExtras .extra-form').forEach(extraForm => {
+                const nombreExtra = extraForm.querySelector('[data-extra-nombre]').value.trim();
+                const precioExtra = parseFloat(extraForm.querySelector('[data-extra-precio]').value);
+                
+                if (nombreExtra && precioExtra) {
+                    extras.push({
+                        id: `extra-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                        nombre: nombreExtra,
+                        precio: precioExtra
+                    });
+                }
+            });
+            
+            // Actualizar producto
+            const menu = JSON.parse(localStorage.getItem('bermely_menu') || '[]');
+            const index = menu.findIndex(p => p.id === window.productoEditando.id);
+            
+            if (index !== -1) {
+                menu[index] = {
+                    ...menu[index],
+                    nombre: nombre,
+                    precio: precio,
+                    categoria: categoria,
+                    area: area,
+                    descripcion: descripcion || null,
+                    disponible: disponible,
+                    requiereComentario: requiereComentario,
+                    express: express,
+                    extras: extras.length > 0 ? extras : null
+                };
+                
+                localStorage.setItem('bermely_menu', JSON.stringify(menu));
+                
+                // Actualizar sistema
+                if (sistemaMenu) {
+                    sistemaMenu.menu = menu;
+                    sistemaMenu.extraerCategorias();
+                }
+                
+                alert('Producto actualizado exitosamente');
+                cerrarModal('modalEditarProducto');
+                cargarMenuAdmin();
+                
+                // Limpiar referencia
+                window.productoEditando = null;
+                window.editExtrasCount = 0;
+            }
+        }
+
+        async function eliminarProducto(productoId) {
+            if (!confirm('¿Estás seguro de que quieres eliminar este producto? Esta acción no se puede deshacer.')) {
+                return;
+            }
+            
+            const menu = JSON.parse(localStorage.getItem('bermely_menu') || '[]');
+            const nuevosProductos = menu.filter(p => p.id !== productoId);
+            
+            localStorage.setItem('bermely_menu', JSON.stringify(nuevosProductos));
+            
+            // Actualizar sistema
+            if (sistemaMenu) {
+                sistemaMenu.menu = nuevosProductos;
+                sistemaMenu.extraerCategorias();
+            }
+            
+            alert('Producto eliminado');
+            cargarMenuAdmin();
+        }
+
+        async function toggleDisponibleProducto(productoId, nuevoEstado) {
+            const menu = JSON.parse(localStorage.getItem('bermely_menu') || '[]');
+            const index = menu.findIndex(p => p.id === productoId);
+            
+            if (index !== -1) {
+                menu[index].disponible = nuevoEstado;
+                localStorage.setItem('bermely_menu', JSON.stringify(menu));
+                
+                // Actualizar sistema
+                if (sistemaMenu) {
+                    sistemaMenu.menu = menu;
+                }
+                
+                cargarMenuAdmin();
+            }
+        }
+
+        // ===== USUARIOS =====
+        function cargarUsuariosAdmin() {
+            const usuarios = obtenerTodosUsuarios();
+            actualizarEstadisticasUsuarios(usuarios);
+            renderizarTablaUsuarios(usuarios);
+        }
+
+        function actualizarEstadisticasUsuarios(usuarios) {
+            const total = usuarios.length;
+            const admin = usuarios.filter(u => u.rol === 'admin').length;
+            const mesero = usuarios.filter(u => u.rol === 'mesero').length;
+            const cocina = usuarios.filter(u => u.rol === 'cocina').length;
+            const cafeteria = usuarios.filter(u => u.rol === 'cafeteria').length;
+            
+            document.getElementById('usuariosTotal').textContent = total;
+            document.getElementById('usuariosAdmin').textContent = admin;
+            document.getElementById('usuariosMesero').textContent = mesero;
+            document.getElementById('usuariosCocina').textContent = cocina;
+            document.getElementById('usuariosCafeteria').textContent = cafeteria;
+        }
+
+        function renderizarTablaUsuarios(usuarios) {
+            const cuerpo = document.getElementById('cuerpoTablaUsuarios');
+            
+            cuerpo.innerHTML = usuarios.map(usuario => {
+                let rolBadge = '';
+                switch(usuario.rol) {
+                    case 'admin':
+                        rolBadge = '<span class="badge badge-admin">Admin</span>';
+                        break;
+                    case 'gerente':
+                        rolBadge = '<span class="badge badge-gerente">Gerente</span>';
+                        break;
+                    case 'mesero':
+                        rolBadge = '<span class="badge badge-mesero">Mesero</span>';
+                        break;
+                    case 'cocina':
+                        rolBadge = '<span class="badge badge-cocina">Cocina</span>';
+                        break;
+                    case 'cafeteria':
+                        rolBadge = '<span class="badge badge-cafeteria">Cafetería</span>';
+                        break;
+                }
+                
+                return `
+                    <tr>
+                        <td>${usuario.usuario}</td>
+                        <td>${usuario.nombre}</td>
+                        <td>${rolBadge}</td>
+                        <td>${usuario.email || usuario.turno || 'N/A'}</td>
+                        <td>N/A</td> <!-- Último acceso -->
+                        <td>
+                            <span class="badge badge-success">Activo</span>
+                        </td>
+                        <td>
+                            ${usuarioActual && usuarioActual.rol === 'admin' && usuario.usuario !== usuarioActual.usuario ? `
+                                <button class="btn btn-sm btn-info" onclick="editarUsuarioAdmin('${usuario.usuario}')">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="eliminarUsuarioAdmin('${usuario.usuario}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            ` : '<span class="text-muted">No editable</span>'}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            if (usuarios.length === 0) {
+                cuerpo.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            No hay usuarios registrados
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function abrirModalNuevoUsuario() {
+            document.getElementById('formNuevoUsuario').reset();
+            document.getElementById('grupoTurno').style.display = 'none';
+            abrirModal('modalNuevoUsuario');
+        }
+
+        function guardarNuevoUsuario() {
+            const usuario = document.getElementById('nuevoUsuario').value.trim();
+            const nombre = document.getElementById('nuevoNombre').value.trim();
+            const password = document.getElementById('nuevoPassword').value;
+            const rol = document.getElementById('nuevoRol').value;
+            const turno = document.getElementById('nuevoTurno').value;
+            const email = document.getElementById('nuevoEmail').value.trim();
+            
+            if (!usuario || !nombre || !password || !rol) {
+                alert('Completa todos los campos requeridos');
+                return;
+            }
+            
+            const nuevoUsuario = {
+                usuario: usuario,
+                nombre: nombre,
+                password: password,
+                rol: rol,
+                email: email || null
+            };
+            
+            if (rol === 'mesero') {
+                nuevoUsuario.turno = turno;
+            }
+            
+            const resultado = crearUsuario(nuevoUsuario);
+            
+            if (resultado.exito) {
+                alert(resultado.mensaje);
+                cerrarModal('modalNuevoUsuario');
+                cargarUsuariosAdmin();
+            } else {
+                alert(resultado.mensaje);
+            }
+        }
+
+        function editarUsuarioAdmin(usuarioOriginal) {
+            const usuario = obtenerUsuario(usuarioOriginal);
+            
+            if (!usuario) {
+                alert('Usuario no encontrado');
+                return;
+            }
+            
+            // Similar al modal de nuevo usuario pero cargando datos
+            alert('Función de edición en desarrollo');
+        }
+
+        function eliminarUsuarioAdmin(usuario) {
+            if (usuario === usuarioActual.usuario) {
+                alert('No puedes eliminar tu propio usuario');
+                return;
+            }
+            
+            if (!confirm(`¿Estás seguro de que quieres eliminar al usuario ${usuario}? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+            
+            const resultado = eliminarUsuario(usuario);
+            
+            if (resultado.exito) {
+                alert(resultado.mensaje);
+                cargarUsuariosAdmin();
+            } else {
+                alert(resultado.mensaje);
+            }
+        }
+
+        // ===== REPORTES =====
+        function cargarReportes() {
+            const periodo = document.getElementById('reportePeriodo').value;
+            
+            if (periodo === 'personalizado') {
+                abrirModal('modalFechaPersonalizada');
+                return;
+            }
+            
+            // Implementar generación de reportes
+            alert('Función de reportes en desarrollo');
+        }
+
+        function generarReporteCompleto() {
+            alert('Función de generación de PDF en desarrollo');
+        }
+
+        function exportarReporteExcel() {
+            alert('Función de exportación Excel en desarrollo');
+        }
+
+        function abrirReporteRapido() {
+            // Abre reportes con fecha de hoy
+            document.getElementById('reportePeriodo').value = 'hoy';
+            abrirTab('reportes');
+        }
+
+        // ===== CONFIGURACIÓN =====
+        function cargarConfiguracion() {
+            // Cargar configuración actual
+            const config = JSON.parse(localStorage.getItem('bermely_config') || '{}');
+            
+            document.getElementById('configNombre').value = config.nombre || 'Ber-Mely';
+            document.getElementById('configTelefono').value = config.telefono || '';
+            document.getElementById('configDireccion').value = config.direccion || '';
+            document.getElementById('configIVA').value = config.iva || 16;
+            
+            document.getElementById('configAlertasPedidos').checked = config.alertasPedidos !== false;
+            document.getElementById('configAlertasRetardo').checked = config.alertasRetardo !== false;
+            document.getElementById('configAlertasCaja').checked = config.alertasCaja !== false;
+            document.getElementById('configTiempoRetardo').value = config.tiempoRetardo || 10;
+            
+            document.getElementById('configImprimirComanda').checked = config.imprimirComanda !== false;
+            document.getElementById('configImprimirTicket').checked = config.imprimirTicket !== false;
+            document.getElementById('configImpresora').value = config.impresora || '';
+        }
+
+        function guardarConfiguracion() {
+            const config = {
+                nombre: document.getElementById('configNombre').value,
+                telefono: document.getElementById('configTelefono').value,
+                direccion: document.getElementById('configDireccion').value,
+                iva: parseFloat(document.getElementById('configIVA').value) || 16,
+                
+                alertasPedidos: document.getElementById('configAlertasPedidos').checked,
+                alertasRetardo: document.getElementById('configAlertasRetardo').checked,
+                alertasCaja: document.getElementById('configAlertasCaja').checked,
+                tiempoRetardo: parseInt(document.getElementById('configTiempoRetardo').value) || 10,
+                
+                imprimirComanda: document.getElementById('configImprimirComanda').checked,
+                imprimirTicket: document.getElementById('configImprimirTicket').checked,
+                impresora: document.getElementById('configImpresora').value,
+                
+                fechaActualizacion: new Date().toISOString()
+            };
+            
+            localStorage.setItem('bermely_config', JSON.stringify(config));
+            alert('Configuración guardada exitosamente');
+        }
+
+        function realizarBackup() {
+            const backup = {
+                fecha: new Date().toISOString(),
+                espacios: JSON.parse(localStorage.getItem('bermely_espacios') || '[]'),
+                menu: JSON.parse(localStorage.getItem('bermely_menu') || '[]'),
+                usuarios: JSON.parse(localStorage.getItem('bermely_usuarios') || '[]'),
+                pedidos: JSON.parse(localStorage.getItem('bermely_pedidos') || '[]'),
+                cobros: JSON.parse(localStorage.getItem('bermely_cobros') || '[]'),
+                config: JSON.parse(localStorage.getItem('bermely_config') || '{}')
+            };
+            
+            const blob = new Blob([JSON.stringify(backup, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `backup-bermely-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert('Backup creado exitosamente');
+        }
+
+        function limpiarDatosAntiguos() {
+            if (!confirm('¿Estás seguro de que quieres limpiar datos antiguos? Se eliminarán pedidos y cobros de hace más de 30 días.')) {
+                return;
+            }
+            
+            const treintaDiasAtras = new Date();
+            treintaDiasAtras.setDate(treintaDiasAtras.getDate() - 30);
+            
+            // Limpiar pedidos antiguos
+            const pedidos = JSON.parse(localStorage.getItem('bermely_pedidos') || '[]');
+            const pedidosNuevos = pedidos.filter(pedido => {
+                const fechaPedido = new Date(pedido.horaCreacion);
+                return fechaPedido >= treintaDiasAtras;
+            });
+            localStorage.setItem('bermely_pedidos', JSON.stringify(pedidosNuevos));
+            
+            // Limpiar cobros antiguos
+            const cobros = JSON.parse(localStorage.getItem('bermely_cobros') || '[]');
+            const cobrosNuevos = cobros.filter(cobro => {
+                const fechaCobro = new Date(cobro.fecha);
+                return fechaCobro >= treintaDiasAtras;
+            });
+            localStorage.setItem('bermely_cobros', JSON.stringify(cobrosNuevos));
+            
+            alert(`Datos limpiados: ${pedidos.length - pedidosNuevos.length} pedidos y ${cobros.length - cobrosNuevos.length} cobros eliminados`);
+        }
+
+        function restaurarValoresPredeterminados() {
+            if (!confirm('¿Restaurar valores predeterminados? Esto eliminará toda la configuración personalizada.')) {
+                return;
+            }
+            
+            localStorage.removeItem('bermely_config');
+            cargarConfiguracion();
+            alert('Valores predeterminados restaurados');
+        }
+
+        // ===== FUNCIONES GENERALES =====
+        function abrirModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function cerrarModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function abrirCaja() {
+            alert('Módulo de caja en desarrollo');
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Hacer funciones globales para modales
+        window.guardarEdicionProducto = guardarEdicionProducto;
+    </script>
+</body>
+</html>

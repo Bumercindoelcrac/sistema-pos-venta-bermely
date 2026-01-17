@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ber-Mely POS - Selección de Área</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .selector-container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 30px;
+        }
+        
+        .selector-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .logo-grande {
+            font-size: 60px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .selector-header h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        
+        .areas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .area-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+        
+        .area-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        
+        .area-card.cocina:hover {
+            border-color: #e74c3c;
+        }
+        
+        .area-card.cafeteria:hover {
+            border-color: #d35400;
+        }
+        
+        .area-header {
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+        
+        .area-cocina .area-header {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .area-cafeteria .area-header {
+            background: linear-gradient(135deg, #d35400, #a35200);
+        }
+        
+        .area-icon {
+            font-size: 70px;
+            margin-bottom: 20px;
+        }
+        
+        .area-header h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .area-desc {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .area-content {
+            padding: 30px;
+        }
+        
+        .area-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 25px;
+        }
+        
+        .area-features li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f1f1;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .area-features li:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-icon {
+            width: 30px;
+            height: 30px;
+            background: #f8f9fa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #2c3e50;
+        }
+        
+        .area-cocina .feature-icon {
+            background: #ffeaea;
+            color: #e74c3c;
+        }
+        
+        .area-cafeteria .feature-icon {
+            background: #fff3e0;
+            color: #d35400;
+        }
+        
+        .area-actions {
+            text-align: center;
+        }
+        
+        .btn-area {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-cocina {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .btn-cafeteria {
+            background: linear-gradient(135deg, #d35400, #a35200);
+            color: white;
+        }
+        
+        .btn-area:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .selector-footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #f1f1f1;
+            color: #7f8c8d;
+        }
+        
+        .btn-volver {
+            margin-top: 20px;
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-volver:hover {
+            background: #7f8c8d;
+        }
+        
+        .indicador-activo {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #2ecc71;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .status-sistema {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .areas-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .selector-container {
+                padding: 20px;
+                margin: 20px auto;
+            }
+            
+            .area-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .area-icon {
+                font-size: 50px;
+            }
+        }
+    </style>
+</head>
+<body class="selector-page">
+    <div class="selector-container">
+        <div class="selector-header">
+            <div class="logo-grande">
+                <i class="fas fa-utensils"></i>
+            </div>
+            <h1>Ber-Mely POS</h1>
+            <p class="tagline">Selecciona tu Área de Trabajo</p>
+            
+            <div class="status-sistema">
+                <span class="indicador-activo"></span>
+                Sistema activo - Tiempo real
+            </div>
+        </div>
+
+        <div class="areas-grid">
+            <!-- Área de Cocina -->
+            <div class="area-card area-cocina" onclick="seleccionarArea('cocina')">
+                <div class="area-header">
+                    <div class="area-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <h2>Cocina Principal</h2>
+                    <p class="area-desc">Preparación de alimentos principales</p>
+                </div>
+                
+                <div class="area-content">
+                    <ul class="area-features">
+                        <li>
+                            <span class="feature-icon"><i class="fas fa-pepper-hot"></i></span>
+                            <span>Tacos y antojitos</span>
+                        </li>
+                        <li>
+                            <span class="feature-icon"><i class="fas fa-hamburger"></i></span>
+                            <span>Hamburguesas y sandwiches</span>
+                        </li>
+                        <li>
+                            <span class="feature-icon"><i class="fas fa-drumstick-bite"></i></span>
+                            <span>Platos fuertes y especiales</span>
+                        </li>
+                        <li>
+                            <span class="feature-icon"><i class="fas fa-clock"></i></span>
+                            <span>Sistema de temporizador automático</span>
+                        </li>
+                        <li>
+                            <span class="feature-icon"><i class="fas fa-bell"></i></span>
+                            <span>Notificaciones en tiempo real</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="area-actions">
+                        <button class="btn-area btn-cocina">
+                            <i class="fas fa-sign-in-alt"></i> Ingresar a Cocina
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Área de Cafetería -->
+            <div class="area-card area-cafeteria" onclick="seleccionarArea('cafeteria')">
+                <div class="area-header">
+                    <div class="area-icon">
+                        <i class="fas fa-coffee"></i>
+                    </div>
+                    <h2>Cafetería y Postres</h2>
+                    <p class="area-desc">Bebidas, crepas y postres</p>
+                </div>
+                
+                <div class="area-content">
+                    <ul class="area-features">
+                        <li>
+                            <span class="feature-icon"><i class="fas fa-coffee"></i></span>
+                            <span>Bebidas calientes y frías</span>
+                        </li>
+                        <li>
+                            <span class="feature-icon"><i class="fas fa-pancakes"></i></span>
+                            <span>Crepas dulces y saladas</span>
+                        </li>
+                        <li>
+                            <span class="feature-icon"><i class="fas fa-ice-cream"></i></span>
+                            <span>Smoothies y malteadas</span>
+                        </li>
+                        <li>
+                            <span class="feature-icon"><i class="fas fa-bolt"></i></span>
+                            <span>Modo Express para venta rápida</span>
+                        </li>
+                        <li>
+                            <span class="feature-icon"><i class="fas fa-cash-register"></i></span>
+                            <span>Cobro directo sin mesero</span>
+                        </li>
+                    </ul>
+                    
+                    <div class="area-actions">
+                        <button class="btn-area btn-cafeteria">
+                            <i class="fas fa-sign-in-alt"></i> Ingresar a Cafetería
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="selector-footer">
+            <p><strong>Sistema Ber-Mely POS v2.0</strong></p>
+            <p>Separación automática de áreas | Actualización en tiempo real</p>
+            <p class="info-tecnica">
+                <small>
+                    <i class="fas fa-info-circle"></i>
+                    El sistema separa automáticamente los pedidos entre cocina y cafetería
+                </small>
+            </p>
+            <a href="index.html" class="btn btn-secondary btn-volver">
+                <i class="fas fa-arrow-left"></i> Volver al Login
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function seleccionarArea(area) {
+            if (area === 'cocina') {
+                window.location.href = 'panel-cocina.html';
+            } else if (area === 'cafeteria') {
+                window.location.href = 'cafeteria.html';
+            }
+        }
+        
+        // Efecto de hover en tarjetas
+        document.querySelectorAll('.area-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+        
+        // Efecto en botones
+        document.querySelectorAll('.btn-area').forEach(btn => {
+            btn.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+            });
+            
+            btn.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

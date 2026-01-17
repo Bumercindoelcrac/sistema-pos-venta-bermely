@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ber-Mely POS - Login</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo">
+                <i class="fas fa-utensils"></i>
+                <h1>Ber-Mely POS</h1>
+            </div>
+            <p class="tagline">Sistema de Gestión para Restaurantes</p>
+        </div>
+
+        <div class="login-card">
+            <h2><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</h2>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="usuario">
+                        <i class="fas fa-user"></i> Usuario
+                    </label>
+                    <input type="text" id="usuario" placeholder="Ingresa tu usuario" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i> Contraseña
+                    </label>
+                    <input type="password" id="password" placeholder="Ingresa tu contraseña" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </button>
+            </form>
+
+            <div class="quick-access">
+                <h3>Acceso Rápido (Modo Prueba):</h3>
+                <div class="quick-buttons">
+                    <button class="btn btn-admin" onclick="loginAs('admin', 'admin123')">
+                        <i class="fas fa-crown"></i> Admin
+                    </button>
+                    <button class="btn btn-mesero" onclick="loginAs('mesero1', 'mesero123')">
+                        <i class="fas fa-concierge-bell"></i> Mesero
+                    </button>
+                    <button class="btn btn-cocina" onclick="loginAs('cocina', 'cocina123')">
+                        <i class="fas fa-utensils"></i> Cocina
+                    </button>
+                    <button class="btn btn-cafeteria" onclick="loginAs('cafeteria', 'cafe123')">
+                        <i class="fas fa-coffee"></i> Cafetería
+                    </button>
+                </div>
+            </div>
+
+            <div class="system-status">
+                <p id="statusMessage">
+                    <i class="fas fa-check-circle"></i> Sistema listo - Modo Desarrollo Activo
+                </p>
+            </div>
+        </div>
+
+        <div class="login-footer">
+            <p><strong>Ber-Mely POS v2.0</strong> | Sistema de 12 Espacios</p>
+            <p>Separación automática Cocina/Cafetería</p>
+        </div>
+    </div>
+
+    <script src="js/firebase.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // Función para login rápido
+        function loginAs(usuario, password) {
+            document.getElementById('usuario').value = usuario;
+            document.getElementById('password').value = password;
+            document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+        }
+
+        // Manejar el formulario de login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const usuario = document.getElementById('usuario').value.trim();
+            const password = document.getElementById('password').value;
+            
+            // Usar el sistema de autenticación
+            if (window.login && typeof window.login === 'function') {
+                const success = window.login(usuario, password);
+                if (success) {
+                    document.getElementById('statusMessage').innerHTML = 
+                        `<i class="fas fa-spinner fa-spin"></i> Redirigiendo...`;
+                } else {
+                    document.getElementById('statusMessage').innerHTML = 
+                        `<i class="fas fa-exclamation-circle"></i> Usuario o contraseña incorrectos`;
+                }
+            } else {
+                // Fallback si el sistema de auth no está cargado
+                alert('Sistema de autenticación no disponible. Usa los botones de acceso rápido.');
+            }
+        });
+    </script>
+</body>
+</html>

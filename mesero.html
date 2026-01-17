@@ -1,0 +1,2156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ber-Mely POS - Panel Mesero</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos adicionales específicos para mesero */
+        .menu-contenedor {
+            display: flex;
+            gap: 20px;
+            height: calc(100vh - 180px);
+        }
+        
+        .categorias-sidebar {
+            width: 250px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+        
+        .categoria-filtros {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .categoria-btn {
+            padding: 12px 15px;
+            border: none;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: left;
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .categoria-btn:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .categoria-btn.active {
+            background: #3498db;
+            color: white;
+        }
+        
+        .categoria-btn .categoria-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .area-filtros {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #f1f1f1;
+        }
+        
+        .area-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            background: #f8f9fa;
+            color: #333;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .area-btn:hover {
+            background: #e9ecef;
+        }
+        
+        .area-btn.active {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .area-cocina.active {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .area-cafeteria.active {
+            background: #d35400;
+            color: white;
+        }
+        
+        .productos-grid {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            align-content: start;
+        }
+        
+        .producto-tarjeta {
+            background: #fff;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .producto-tarjeta:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-color: #3498db;
+        }
+        
+        .producto-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .producto-nombre {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 15px;
+            line-height: 1.3;
+            flex: 1;
+        }
+        
+        .producto-area-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 8px;
+            white-space: nowrap;
+        }
+        
+        .badge-cocina {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .badge-cafeteria {
+            background: #d35400;
+            color: white;
+        }
+        
+        .producto-precio {
+            font-weight: 700;
+            color: #27ae60;
+            font-size: 18px;
+            white-space: nowrap;
+        }
+        
+        .producto-info {
+            margin-top: 10px;
+            flex: 1;
+        }
+        
+        .producto-categoria {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .producto-desc {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+        
+        .producto-extras-info {
+            font-size: 12px;
+            color: #3498db;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: auto;
+        }
+        
+        .producto-alerta {
+            font-size: 12px;
+            color: #e74c3c;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 8px;
+            padding: 5px 8px;
+            background: #ffeaea;
+            border-radius: 6px;
+        }
+        
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-container i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .carrito-flotante {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+        
+        .btn-carrito-flotante {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-carrito-flotante:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.6);
+        }
+        
+        .carrito-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        /* Estilos para extras en modal */
+        .extras-grid {
+            display: grid;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .extra-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .extra-item:hover {
+            background: #e9ecef;
+        }
+        
+        .extra-item input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+        }
+        
+        .extra-info {
+            flex: 1;
+        }
+        
+        .extra-nombre {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .extra-precio {
+            color: #27ae60;
+            font-weight: 600;
+        }
+        
+        .precio-total-modal {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .precio-total-modal .precio-total {
+            color: #e74c3c;
+            font-size: 24px;
+        }
+        
+        /* Animaciones */
+        @keyframes agregarAlCarrito {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .agregado-animacion {
+            animation: agregarAlCarrito 0.3s ease;
+        }
+        
+        /* Estado vacío */
+        .estado-vacio {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+        }
+        
+        .estado-vacio i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .menu-contenedor {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .categorias-sidebar {
+                width: 100%;
+                order: 2;
+            }
+            
+            .productos-grid {
+                order: 1;
+            }
+            
+            .carrito-flotante {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header del Mesero -->
+    <header class="app-header header-mesero">
+        <div class="header-left">
+            <div class="logo">
+                <i class="fas fa-concierge-bell"></i>
+            </div>
+            <div class="header-info">
+                <h1>Panel de Mesero</h1>
+                <p id="usuarioInfo">Mesero: Juan Pérez</p>
+            </div>
+        </div>
+        
+        <div class="header-center">
+            <div class="status-indicator">
+                <i class="fas fa-circle text-success"></i>
+                <span id="statusTexto">Sistema Activo</span>
+            </div>
+            <div class="hora-actual" id="horaActual"></div>
+        </div>
+        
+        <div class="header-right">
+            <button class="btn btn-warning" onclick="verPedidosListos()">
+                <i class="fas fa-bell"></i>
+                <span id="badgePedidosListos" class="badge-notificacion">0</span>
+            </button>
+            <button class="btn btn-primary" onclick="verCarrito()">
+                <i class="fas fa-shopping-cart"></i>
+                <span id="carritoContador">0</span>
+            </button>
+            <button class="btn btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+            </button>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal -->
+    <main class="main-container">
+        <!-- Sección de 12 Espacios -->
+        <section class="espacios-section" id="seccionEspacios">
+            <div class="section-header">
+                <h2><i class="fas fa-chair"></i> 12 Espacios</h2>
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="legend-color libre"></span>
+                        <span>Libre</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color ocupada"></span>
+                        <span>Ocupada</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color preparacion"></span>
+                        <span>En Preparación</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color listo"></span>
+                        <span>Listo</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color porcobrar"></span>
+                        <span>Por Cobrar</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="espacios-grid" id="espaciosGrid">
+                <!-- Los 12 espacios se cargan aquí dinámicamente -->
+            </div>
+        </section>
+
+        <!-- Sección de Pedidos Listos -->
+        <section class="pedidos-listos-section" id="seccionPedidosListos" style="display: none;">
+            <div class="section-header">
+                <h2><i class="fas fa-bell"></i> Pedidos Listos para Entregar</h2>
+                <button class="btn btn-secondary" onclick="volverAEspacios()">
+                    <i class="fas fa-arrow-left"></i> Volver a Espacios
+                </button>
+            </div>
+            
+            <div class="pedidos-listos-grid" id="pedidosListosGrid">
+                <!-- Pedidos listos se cargan aquí -->
+            </div>
+        </section>
+
+        <!-- Sección de Menú y Carrito -->
+        <section class="pedidos-section" id="seccionPedidos" style="display: none;">
+            <div class="pedidos-header">
+                <div class="pedidos-header-info">
+                    <h3 id="mesaSeleccionadaTitulo"></h3>
+                    <div class="cliente-info">
+                        <span id="clienteNombre"></span>
+                        <span class="mesa-info" id="mesaInfo"></span>
+                    </div>
+                </div>
+                <div class="pedidos-header-actions">
+                    <button class="btn btn-warning" onclick="verPedidosListos()">
+                        <i class="fas fa-bell"></i>
+                        <span id="badgePedidosListos2" class="badge-notificacion">0</span>
+                    </button>
+                    <button class="btn btn-primary" onclick="verCarrito()">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="carritoContador2">0</span>
+                    </button>
+                    <button class="btn btn-danger" onclick="volverAEspacios()">
+                        <i class="fas fa-times"></i> Cerrar
+                    </button>
+                </div>
+            </div>
+            
+            <div class="menu-contenedor">
+                <!-- Sidebar de Categorías y Filtros -->
+                <div class="categorias-sidebar">
+                    <div class="search-container">
+                        <i class="fas fa-search"></i>
+                        <input type="text" 
+                               class="search-input" 
+                               id="buscarProducto" 
+                               placeholder="Buscar producto...">
+                    </div>
+                    
+                    <div class="categoria-filtros" id="categoriasContainer">
+                        <!-- Categorías se cargan dinámicamente -->
+                    </div>
+                    
+                    <div class="area-filtros">
+                        <h4>Filtrar por Área:</h4>
+                        <button class="area-btn area-todas active" onclick="filtrarPorArea('todas')">
+                            <i class="fas fa-th"></i> Todas las áreas
+                        </button>
+                        <button class="area-btn area-cocina" onclick="filtrarPorArea('cocina')">
+                            <i class="fas fa-fire"></i> Solo Cocina
+                        </button>
+                        <button class="area-btn area-cafeteria" onclick="filtrarPorArea('cafeteria')">
+                            <i class="fas fa-coffee"></i> Solo Cafetería
+                        </button>
+                    </div>
+                    
+                    <div class="estadisticas-rapidas" style="margin-top: 30px;">
+                        <div class="estadistica-rapida">
+                            <div class="valor" id="contadorProductos">0</div>
+                            <div class="label">Productos</div>
+                        </div>
+                        <div class="estadistica-rapida">
+                            <div class="valor" id="contadorCocina">0</div>
+                            <div class="label">Cocina</div>
+                        </div>
+                        <div class="estadistica-rapida">
+                            <div class="valor" id="contadorCafeteria">0</div>
+                            <div class="label">Cafetería</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Grid de Productos -->
+                <div class="productos-grid" id="productosGrid">
+                    <!-- Productos se cargan dinámicamente -->
+                </div>
+            </div>
+            
+            <!-- Carrito Flotante -->
+            <div class="carrito-flotante">
+                <button class="btn-carrito-flotante" onclick="verCarrito()">
+                    <i class="fas fa-shopping-cart"></i>
+                    <div class="carrito-badge" id="carritoBadge">0</div>
+                </button>
+            </div>
+        </section>
+
+        <!-- Sección del Carrito -->
+        <section class="carrito-section" id="seccionCarrito" style="display: none;">
+            <div class="carrito-header">
+                <h2><i class="fas fa-shopping-cart"></i> Carrito de Compras</h2>
+                <div class="carrito-header-info">
+                    <div class="info-mesa" id="infoMesaCarrito"></div>
+                    <div class="info-cliente" id="infoClienteCarrito"></div>
+                </div>
+            </div>
+            
+            <div class="carrito-contenedor">
+                <div class="carrito-items-contenedor" id="carritoItemsContainer">
+                    <!-- Items del carrito se cargan aquí -->
+                </div>
+                
+                <div class="carrito-resumen">
+                    <div class="resumen-totales">
+                        <div class="total-item">
+                            <span>Subtotal:</span>
+                            <span id="carritoSubtotal">$0.00</span>
+                        </div>
+                        <div class="total-item">
+                            <span>IVA (16%):</span>
+                            <span id="carritoIva">$0.00</span>
+                        </div>
+                        <div class="total-item total">
+                            <span>Total:</span>
+                            <span id="carritoTotal">$0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="carrito-acciones">
+                        <button class="btn btn-secondary" onclick="volverAMenu()">
+                            <i class="fas fa-arrow-left"></i> Seguir Agregando
+                        </button>
+                        <button class="btn btn-danger" onclick="limpiarCarritoCompleto()">
+                            <i class="fas fa-trash"></i> Vaciar Carrito
+                        </button>
+                        <button class="btn btn-success" onclick="enviarPedido()" id="btnEnviarPedido">
+                            <i class="fas fa-paper-plane"></i> Enviar a Cocina/Cafetería
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modales -->
+    <!-- Modal para Asignar Cliente -->
+    <div class="modal-overlay" id="modalAsignarCliente">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus"></i> Asignar Cliente</h3>
+                <button class="btn-close" onclick="cerrarModal('modalAsignarCliente')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="nombreCliente">Nombre del Cliente *</label>
+                    <input type="text" id="nombreCliente" placeholder="Ej: Familia Rodríguez" required>
+                </div>
+                <div class="form-group">
+                    <label for="comensales">Número de Comensales</label>
+                    <select id="comensales">
+                        <option value="1">1 persona</option>
+                        <option value="2" selected>2 personas</option>
+                        <option value="3">3 personas</option>
+                        <option value="4">4 personas</option>
+                        <option value="5">5 personas</option>
+                        <option value="6">6+ personas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="comentarioCliente">Comentario (opcional)</label>
+                    <textarea id="comentarioCliente" placeholder="Ej: Aniversario, alergias, etc." rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="cerrarModal('modalAsignarCliente')">
+                    Cancelar
+                </button>
+                <button class="btn btn-primary" onclick="confirmarAsignarCliente()">
+                    <i class="fas fa-check"></i> Asignar Cliente
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar Producto (MEJORADO) -->
+    <div class="modal-overlay" id="modalAgregarProducto">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalProductoTitulo"></h3>
+                <div class="modal-subtitle" id="modalProductoSubtitulo"></div>
+                <button class="btn-close" onclick="cerrarModal('modalAgregarProducto')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="producto-info-modal">
+                    <div class="producto-desc-modal" id="productoDescripcion"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-hashtag"></i> Cantidad</label>
+                    <div class="cantidad-control">
+                        <button class="btn-cantidad" onclick="cambiarCantidadProducto(-1)">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <input type="number" id="productoCantidad" value="1" min="1" max="99" onchange="actualizarTotalProducto()">
+                        <button class="btn-cantidad" onclick="cambiarCantidadProducto(1)">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="extras-section" id="extrasContainer">
+                    <!-- Extras se cargan dinámicamente -->
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-sticky-note"></i> Comentario para cocina/cafetería</label>
+                    <textarea id="productoComentario" 
+                              placeholder="Ej: Sin cebolla, bien cocido, sin picante, etc." 
+                              rows="3"
+                              oninput="verificarComentarioObligatorio()"></textarea>
+                    <div class="comentario-obligatorio" id="comentarioObligatorio" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>¡Este producto REQUIERE comentario!</span>
+                    </div>
+                </div>
+                
+                <div class="precio-total-modal">
+                    <span>Total del producto:</span>
+                    <span class="precio-total" id="productoTotal">$0.00</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="cerrarModal('modalAgregarProducto')">
+                    Cancelar
+                </button>
+                <button class="btn btn-success" onclick="agregarAlCarrito()" id="btnAgregarCarrito">
+                    <i class="fas fa-cart-plus"></i> Agregar al Carrito
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Ver Carrito Rápido -->
+    <div class="modal-overlay" id="modalCarritoRapido">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3><i class="fas fa-shopping-cart"></i> Resumen del Carrito</h3>
+                <button class="btn-close" onclick="cerrarModal('modalCarritoRapido')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="carrito-rapido-contenedor" id="carritoRapidoContainer">
+                    <!-- Items del carrito rápido -->
+                </div>
+                <div class="carrito-rapido-totales">
+                    <div class="total-rapido">
+                        <span>Total:</span>
+                        <span id="carritoRapidoTotal">$0.00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="cerrarModal('modalCarritoRapido')">
+                    Seguir Comprando
+                </button>
+                <button class="btn btn-primary" onclick="irACarritoCompleto()">
+                    <i class="fas fa-shopping-cart"></i> Ver Carrito Completo
+                </button>
+                <button class="btn btn-success" onclick="enviarPedidoDesdeRapido()">
+                    <i class="fas fa-paper-plane"></i> Enviar Pedido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/firebase.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/espacios.js"></script>
+    <script src="js/pedidos.js"></script>
+    <script src="js/menu-extras.js"></script>
+    <script>
+        // ===== VARIABLES GLOBALES =====
+        let espacioSeleccionado = null;
+        let productoSeleccionado = null;
+        let carrito = new Carrito();
+        let pedidosListos = [];
+        let filtroAreaActual = 'todas';
+        let filtroCategoriaActual = 'todos';
+        let menuCompleto = [];
+
+        // ===== INICIALIZACIÓN =====
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarSesion('mesero');
+            inicializarSistema();
+        });
+
+        function inicializarSistema() {
+            cargarUsuarioInfo();
+            cargarEspacios();
+            cargarMenuCompleto();
+            iniciarEscuchas();
+            actualizarHora();
+            
+            // Configurar event listeners
+            document.getElementById('buscarProducto').addEventListener('input', buscarProductos);
+            
+            // Actualizar cada 30 segundos
+            setInterval(() => {
+                cargarEspacios();
+                cargarPedidosListos();
+                actualizarHora();
+            }, 30000);
+        }
+
+        function cargarUsuarioInfo() {
+            const usuario = getUsuarioActual();
+            if (usuario) {
+                document.getElementById('usuarioInfo').textContent = `Mesero: ${usuario.nombre}`;
+            }
+        }
+
+        function actualizarHora() {
+            const ahora = new Date();
+            const hora = ahora.toLocaleTimeString('es-MX', { 
+                hour: '2-digit', 
+                minute: '2-digit'
+            });
+            document.getElementById('horaActual').textContent = hora;
+        }
+
+        function iniciarEscuchas() {
+            // Escuchar cambios en espacios (si está disponible)
+            if (typeof escucharEspacios === 'function') {
+                escucharEspacios((espacios) => {
+                    renderizarEspacios(espacios);
+                });
+            }
+        }
+
+        // ===== GESTIÓN DE ESPACIOS =====
+        async function cargarEspacios() {
+            try {
+                const espacios = await obtenerEspacios();
+                renderizarEspacios(espacios);
+            } catch (error) {
+                console.error('Error cargando espacios:', error);
+                document.getElementById('statusTexto').innerHTML = 
+                    '<i class="fas fa-exclamation-triangle"></i> Error conexión';
+            }
+        }
+
+        function renderizarEspacios(espacios) {
+            const grid = document.getElementById('espaciosGrid');
+            grid.innerHTML = '';
+            
+            espacios.forEach(espacio => {
+                const tiempo = espacio.horaInicio ? 
+                    Math.round((new Date() - new Date(espacio.horaInicio)) / (1000 * 60)) : 0;
+                
+                const espacioHTML = `
+                    <div class="espacio-card ${espacio.estado}" 
+                         onclick="seleccionarEspacio('${espacio.id}')"
+                         data-espacio-id="${espacio.id}">
+                        <div class="espacio-header">
+                            <div class="espacio-numero">${espacio.nombre}</div>
+                            <div class="estado-badge badge-${espacio.estado}">
+                                ${espacio.estado.toUpperCase()}
+                            </div>
+                        </div>
+                        
+                        <div class="espacio-info">
+                            ${espacio.cliente ? `
+                                <div class="cliente-nombre">${espacio.cliente}</div>
+                                <div class="mesero-nombre">Mesero: ${espacio.mesero || 'No asignado'}</div>
+                                ${espacio.comensales ? `
+                                    <div class="comensales">${espacio.comensales} comensales</div>
+                                ` : ''}
+                            ` : '<div class="cliente-nombre">Libre</div>'}
+                        </div>
+                        
+                        <div class="espacio-estadisticas">
+                            ${espacio.total ? `
+                                <div class="pedido-info">Total: $${espacio.total.toFixed(2)}</div>
+                            ` : ''}
+                            ${tiempo > 0 ? `
+                                <div class="tiempo-info">
+                                    <i class="fas fa-clock"></i>
+                                    ${tiempo} min
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="espacio-acciones">
+                            ${espacio.estado === 'libre' ? `
+                                <button class="btn btn-sm btn-success" onclick="asignarCliente(event, '${espacio.id}')">
+                                    <i class="fas fa-user-plus"></i> Asignar
+                                </button>
+                            ` : ''}
+                            
+                            ${espacio.estado === 'ocupada' || espacio.estado === 'preparacion' || espacio.estado === 'listo' ? `
+                                <button class="btn btn-sm btn-primary" onclick="verPedido(event, '${espacio.id}')">
+                                    <i class="fas fa-edit"></i> Ver Pedido
+                                </button>
+                            ` : ''}
+                            
+                            ${espacio.estado === 'porcobrar' ? `
+                                <button class="btn btn-sm btn-warning" onclick="cobrarCuenta(event, '${espacio.id}')">
+                                    <i class="fas fa-cash-register"></i> Cobrar
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                
+                grid.innerHTML += espacioHTML;
+            });
+        }
+
+        function seleccionarEspacio(espacioId) {
+            obtenerEspacioPorId(espacioId).then(espacio => {
+                if (!espacio) return;
+                
+                if (espacio.estado === 'libre') {
+                    espacioSeleccionado = espacioId;
+                    abrirModal('modalAsignarCliente');
+                } else if (espacio.estado === 'ocupada' || espacio.estado === 'preparacion' || espacio.estado === 'listo') {
+                    verPedido(null, espacioId);
+                } else if (espacio.estado === 'porcobrar') {
+                    cobrarCuenta(null, espacioId);
+                }
+            });
+        }
+
+        function asignarCliente(event, espacioId) {
+            event.stopPropagation();
+            espacioSeleccionado = espacioId;
+            abrirModal('modalAsignarCliente');
+        }
+
+        async function confirmarAsignarCliente() {
+            const nombre = document.getElementById('nombreCliente').value.trim();
+            const comensales = document.getElementById('comensales').value;
+            const comentario = document.getElementById('comentarioCliente').value.trim();
+            
+            if (!nombre) {
+                alert('Por favor ingresa el nombre del cliente');
+                return;
+            }
+            
+            const usuario = getUsuarioActual();
+            
+            // Actualizar el espacio
+            const exito = await actualizarEstadoEspacio(espacioSeleccionado, {
+                estado: 'ocupada',
+                cliente: nombre,
+                comensales: parseInt(comensales),
+                comentario: comentario,
+                mesero: usuario.nombre,
+                horaInicio: new Date().toISOString(),
+                pedido: { items: [], total: 0 }
+            });
+            
+            if (exito) {
+                cerrarModal('modalAsignarCliente');
+                cargarEspacios();
+                
+                // Mostrar sección de pedidos
+                verPedido(null, espacioSeleccionado);
+            } else {
+                alert('Error al asignar cliente');
+            }
+        }
+
+        async function verPedido(event, espacioId) {
+            if (event) event.stopPropagation();
+            
+            espacioSeleccionado = espacioId;
+            const espacio = await obtenerEspacioPorId(espacioId);
+            
+            if (!espacio) {
+                alert('Espacio no encontrado');
+                return;
+            }
+            
+            // Actualizar información en la vista
+            document.getElementById('mesaSeleccionadaTitulo').textContent = 
+                `Pedido: ${espacio.nombre}`;
+            document.getElementById('clienteNombre').textContent = espacio.cliente;
+            document.getElementById('mesaInfo').textContent = espacio.nombre;
+            
+            // Cargar pedido existente si hay
+            carrito = new Carrito();
+            if (espacio.pedido && espacio.pedido.items) {
+                carrito.items = espacio.pedido.items;
+                carrito.calcularTotal();
+                actualizarContadorCarrito();
+            }
+            
+            // Mostrar sección de pedidos
+            document.getElementById('seccionEspacios').style.display = 'none';
+            document.getElementById('seccionPedidosListos').style.display = 'none';
+            document.getElementById('seccionCarrito').style.display = 'none';
+            document.getElementById('seccionPedidos').style.display = 'block';
+            
+            // Actualizar contadores en el carrito
+            actualizarInfoCarrito();
+        }
+
+        function volverAEspacios() {
+            // Guardar pedido actual si hay
+            if (carrito.items.length > 0) {
+                guardarPedidoEnEspacio();
+            }
+            
+            // Volver a la vista de espacios
+            document.getElementById('seccionEspacios').style.display = 'block';
+            document.getElementById('seccionPedidosListos').style.display = 'none';
+            document.getElementById('seccionPedidos').style.display = 'none';
+            document.getElementById('seccionCarrito').style.display = 'none';
+            
+            espacioSeleccionado = null;
+            carrito = new Carrito();
+            actualizarContadorCarrito();
+        }
+
+        // ===== GESTIÓN DEL MENÚ =====
+        async function cargarMenuCompleto() {
+            try {
+                menuCompleto = await obtenerMenuCompleto();
+                if (menuCompleto.length === 0) {
+                    // Si no hay menú, cargar uno por defecto
+                    menuCompleto = await cargarMenuPorDefecto();
+                }
+                
+                // Cargar categorías y productos
+                cargarCategorias();
+                cargarProductos();
+                actualizarEstadisticasMenu();
+                
+            } catch (error) {
+                console.error('Error cargando menú:', error);
+                mostrarErrorMenu();
+            }
+        }
+
+        async function cargarMenuPorDefecto() {
+            // Menú por defecto
+            const menuDefault = [
+                {
+                    id: 'taco-pastor',
+                    nombre: 'Tacos al Pastor',
+                    precio: 25,
+                    categoria: 'tacos',
+                    area: 'cocina',
+                    descripcion: 'Tacos de pastor con piña',
+                    extras: [
+                        { id: 'extra-queso', nombre: 'Extra Queso', precio: 15 },
+                        { id: 'extra-guacamole', nombre: 'Extra Guacamole', precio: 20 }
+                    ],
+                    requiereComentario: false,
+                    disponible: true
+                },
+                {
+                    id: 'hamburguesa-clasica',
+                    nombre: 'Hamburguesa Clásica',
+                    precio: 85,
+                    categoria: 'hamburguesas',
+                    area: 'cocina',
+                    descripcion: 'Hamburguesa con queso y vegetales',
+                    extras: [
+                        { id: 'extra-queso', nombre: 'Extra Queso', precio: 15 },
+                        { id: 'doble-carne', nombre: 'Doble Carne', precio: 40 },
+                        { id: 'extra-tocino', nombre: 'Extra Tocino', precio: 25 }
+                    ],
+                    requiereComentario: true,
+                    disponible: true
+                },
+                {
+                    id: 'crepa-nutella',
+                    nombre: 'Crepas de Nutella',
+                    precio: 75,
+                    categoria: 'crepas',
+                    area: 'cafeteria',
+                    descripcion: 'Crepas con nutella y fresas',
+                    extras: [
+                        { id: 'extra-nutella', nombre: 'Extra Nutella', precio: 20 },
+                        { id: 'extra-helado', nombre: 'Extra Helado', precio: 25 }
+                    ],
+                    requiereComentario: false,
+                    disponible: true
+                },
+                {
+                    id: 'cafe-americano',
+                    nombre: 'Café Americano',
+                    precio: 35,
+                    categoria: 'bebidas',
+                    area: 'cafeteria',
+                    descripcion: 'Café americano caliente',
+                    extras: [
+                        { id: 'extra-leche', nombre: 'Extra Leche', precio: 10 },
+                        { id: 'extra-azucar', nombre: 'Extra Azúcar', precio: 5 }
+                    ],
+                    requiereComentario: false,
+                    disponible: true
+                }
+            ];
+            
+            // Guardar en localStorage para futuras sesiones
+            localStorage.setItem('bermely_menu', JSON.stringify(menuDefault));
+            return menuDefault;
+        }
+
+        function cargarCategorias() {
+            const container = document.getElementById('categoriasContainer');
+            
+            // Obtener categorías únicas
+            const categorias = ['todos', ...new Set(menuCompleto.map(p => p.categoria))];
+            
+            let html = '';
+            categorias.forEach(categoria => {
+                const nombreCategoria = categoria === 'todos' ? 'Todos' : 
+                    categoria.charAt(0).toUpperCase() + categoria.slice(1);
+                const icono = getIconoCategoria(categoria);
+                
+                html += `
+                    <button class="categoria-btn ${categoria === filtroCategoriaActual ? 'active' : ''}" 
+                            onclick="filtrarPorCategoria('${categoria}')">
+                        <span class="categoria-icon">${icono}</span>
+                        <span>${nombreCategoria}</span>
+                    </button>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function getIconoCategoria(categoria) {
+            const iconos = {
+                'todos': '🧺',
+                'tacos': '🌮',
+                'hamburguesas': '🍔',
+                'crepas': '🥞',
+                'bebidas': '🥤',
+                'postres': '🍰',
+                'ensaladas': '🥗',
+                'entradas': '🍲'
+            };
+            return iconos[categoria] || '🍽️';
+        }
+
+        function cargarProductos() {
+            const grid = document.getElementById('productosGrid');
+            let productosFiltrados = menuCompleto;
+            
+            // Aplicar filtro de categoría
+            if (filtroCategoriaActual !== 'todos') {
+                productosFiltrados = productosFiltrados.filter(p => p.categoria === filtroCategoriaActual);
+            }
+            
+            // Aplicar filtro de área
+            if (filtroAreaActual !== 'todas') {
+                productosFiltrados = productosFiltrados.filter(p => p.area === filtroAreaActual);
+            }
+            
+            // Aplicar búsqueda
+            const busqueda = document.getElementById('buscarProducto').value.toLowerCase();
+            if (busqueda) {
+                productosFiltrados = productosFiltrados.filter(p => 
+                    p.nombre.toLowerCase().includes(busqueda) ||
+                    p.descripcion?.toLowerCase().includes(busqueda)
+                );
+            }
+            
+            // Filtrar solo productos disponibles
+            productosFiltrados = productosFiltrados.filter(p => p.disponible !== false);
+            
+            if (productosFiltrados.length === 0) {
+                grid.innerHTML = `
+                    <div class="estado-vacio">
+                        <i class="fas fa-utensils"></i>
+                        <h3>No se encontraron productos</h3>
+                        <p>Intenta con otra búsqueda o filtro</p>
+                        <button class="btn btn-primary" onclick="restablecerFiltros()">
+                            <i class="fas fa-redo"></i> Restablecer filtros
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = productosFiltrados.map(producto => {
+                const iconoArea = producto.area === 'cocina' ? '🔥' : '☕';
+                
+                return `
+                    <div class="producto-tarjeta" onclick="seleccionarProducto('${producto.id}')">
+                        <div class="producto-header">
+                            <div class="producto-nombre">${producto.nombre}</div>
+                            <span class="producto-area-badge badge-${producto.area}">
+                                ${iconoArea} ${producto.area === 'cocina' ? 'Cocina' : 'Cafetería'}
+                            </span>
+                        </div>
+                        
+                        <div class="producto-precio">$${producto.precio.toFixed(2)}</div>
+                        
+                        <div class="producto-info">
+                            <div class="producto-categoria">
+                                <i class="fas fa-tag"></i>
+                                ${producto.categoria.charAt(0).toUpperCase() + producto.categoria.slice(1)}
+                            </div>
+                            
+                            ${producto.descripcion ? `
+                                <div class="producto-desc">
+                                    ${producto.descripcion}
+                                </div>
+                            ` : ''}
+                            
+                            ${producto.extras && producto.extras.length > 0 ? `
+                                <div class="producto-extras-info">
+                                    <i class="fas fa-plus-circle"></i>
+                                    ${producto.extras.length} extras disponibles
+                                </div>
+                            ` : ''}
+                            
+                            ${producto.requiereComentario ? `
+                                <div class="producto-alerta">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    Requiere comentario
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function actualizarEstadisticasMenu() {
+            const total = menuCompleto.length;
+            const cocina = menuCompleto.filter(p => p.area === 'cocina').length;
+            const cafeteria = menuCompleto.filter(p => p.area === 'cafeteria').length;
+            
+            document.getElementById('contadorProductos').textContent = total;
+            document.getElementById('contadorCocina').textContent = cocina;
+            document.getElementById('contadorCafeteria').textContent = cafeteria;
+        }
+
+        function mostrarErrorMenu() {
+            const grid = document.getElementById('productosGrid');
+            grid.innerHTML = `
+                <div class="estado-vacio error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error cargando el menú</h3>
+                    <p>No se pudieron cargar los productos</p>
+                    <button class="btn btn-primary" onclick="cargarMenuCompleto()">
+                        <i class="fas fa-redo"></i> Reintentar
+                    </button>
+                </div>
+            `;
+        }
+
+        function filtrarPorCategoria(categoria) {
+            filtroCategoriaActual = categoria;
+            
+            // Actualizar botones activos
+            document.querySelectorAll('.categoria-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Recargar productos
+            cargarProductos();
+        }
+
+        function filtrarPorArea(area) {
+            filtroAreaActual = area;
+            
+            // Actualizar botones activos
+            document.querySelectorAll('.area-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (area === 'todas') {
+                document.querySelector('.area-todas').classList.add('active');
+            } else if (area === 'cocina') {
+                document.querySelector('.area-cocina').classList.add('active');
+            } else if (area === 'cafeteria') {
+                document.querySelector('.area-cafeteria').classList.add('active');
+            }
+            
+            // Recargar productos
+            cargarProductos();
+        }
+
+        function buscarProductos() {
+            cargarProductos();
+        }
+
+        function restablecerFiltros() {
+            filtroAreaActual = 'todas';
+            filtroCategoriaActual = 'todos';
+            document.getElementById('buscarProducto').value = '';
+            
+            // Actualizar botones
+            document.querySelectorAll('.categoria-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes('Todos')) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            document.querySelectorAll('.area-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes('Todas')) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            cargarCategorias();
+            cargarProductos();
+        }
+
+        // ===== SELECCIÓN DE PRODUCTOS =====
+        async function seleccionarProducto(productoId) {
+            const producto = await obtenerProductoPorId(productoId);
+            if (!producto) {
+                alert('Producto no encontrado');
+                return;
+            }
+            
+            productoSeleccionado = producto;
+            
+            // Actualizar modal
+            document.getElementById('modalProductoTitulo').textContent = producto.nombre;
+            document.getElementById('modalProductoSubtitulo').innerHTML = `
+                <span class="badge-${producto.area}">${producto.area === 'cocina' ? '🔥 Cocina' : '☕ Cafetería'}</span>
+                <span class="precio-base">$${producto.precio.toFixed(2)}</span>
+            `;
+            document.getElementById('productoDescripcion').textContent = producto.descripcion || 'Sin descripción';
+            document.getElementById('productoCantidad').value = 1;
+            document.getElementById('productoComentario').value = '';
+            
+            // Mostrar/ocultar comentario obligatorio
+            const comentarioObligatorio = document.getElementById('comentarioObligatorio');
+            if (producto.requiereComentario) {
+                comentarioObligatorio.style.display = 'flex';
+                document.getElementById('btnAgregarCarrito').disabled = true;
+                document.getElementById('btnAgregarCarrito').innerHTML = 
+                    '<i class="fas fa-exclamation-circle"></i> Comentario requerido';
+            } else {
+                comentarioObligatorio.style.display = 'none';
+                document.getElementById('btnAgregarCarrito').disabled = false;
+                document.getElementById('btnAgregarCarrito').innerHTML = 
+                    '<i class="fas fa-cart-plus"></i> Agregar al Carrito';
+            }
+            
+            // Cargar extras
+            cargarExtrasProducto(producto);
+            
+            // Calcular total inicial
+            actualizarTotalProducto();
+            
+            abrirModal('modalAgregarProducto');
+        }
+
+        function cargarExtrasProducto(producto) {
+            const container = document.getElementById('extrasContainer');
+            
+            if (producto.extras && producto.extras.length > 0) {
+                container.innerHTML = `
+                    <h4><i class="fas fa-plus-circle"></i> Extras disponibles:</h4>
+                    <div class="extras-grid">
+                        ${producto.extras.map(extra => `
+                            <div class="extra-item">
+                                <input type="checkbox" 
+                                       class="extra-checkbox" 
+                                       id="extra-${extra.id}"
+                                       data-id="${extra.id}"
+                                       data-nombre="${extra.nombre}"
+                                       data-precio="${extra.precio}"
+                                       onchange="actualizarTotalProducto()">
+                                <div class="extra-info">
+                                    <div class="extra-nombre">${extra.nombre}</div>
+                                    <div class="extra-precio">+$${extra.precio.toFixed(2)}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="sin-extras">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Este producto no tiene extras disponibles</span>
+                    </div>
+                `;
+            }
+        }
+
+        function cambiarCantidadProducto(delta) {
+            const input = document.getElementById('productoCantidad');
+            let cantidad = parseInt(input.value) + delta;
+            
+            if (cantidad < 1) cantidad = 1;
+            if (cantidad > 99) cantidad = 99;
+            
+            input.value = cantidad;
+            actualizarTotalProducto();
+        }
+
+        function verificarComentarioObligatorio() {
+            if (!productoSeleccionado || !productoSeleccionado.requiereComentario) return;
+            
+            const comentario = document.getElementById('productoComentario').value.trim();
+            const btn = document.getElementById('btnAgregarCarrito');
+            
+            if (comentario) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-cart-plus"></i> Agregar al Carrito';
+            } else {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-exclamation-circle"></i> Comentario requerido';
+            }
+        }
+
+        function actualizarTotalProducto() {
+            if (!productoSeleccionado) return;
+            
+            const cantidad = parseInt(document.getElementById('productoCantidad').value) || 1;
+            let total = productoSeleccionado.precio * cantidad;
+            
+            // Sumar extras seleccionados
+            document.querySelectorAll('.extra-checkbox:checked').forEach(checkbox => {
+                const precioExtra = parseFloat(checkbox.dataset.precio);
+                total += precioExtra * cantidad;
+            });
+            
+            document.getElementById('productoTotal').textContent = `$${total.toFixed(2)}`;
+        }
+
+        async function agregarAlCarrito() {
+            if (!productoSeleccionado) return;
+            
+            const cantidad = parseInt(document.getElementById('productoCantidad').value) || 1;
+            const comentario = document.getElementById('productoComentario').value.trim();
+            
+            // Verificar comentario obligatorio
+            if (productoSeleccionado.requiereComentario && !comentario) {
+                alert('Este producto requiere un comentario para la cocina/cafetería');
+                return;
+            }
+            
+            // Obtener extras seleccionados
+            const extrasSeleccionados = [];
+            document.querySelectorAll('.extra-checkbox:checked').forEach(checkbox => {
+                extrasSeleccionados.push({
+                    id: checkbox.dataset.id,
+                    nombre: checkbox.dataset.nombre,
+                    precio: parseFloat(checkbox.dataset.precio)
+                });
+            });
+            
+            // Crear item del carrito
+            const itemCarrito = {
+                ...productoSeleccionado,
+                id: `${productoSeleccionado.id}-${Date.now()}`,
+                cantidad: cantidad,
+                comentario: comentario,
+                extras: [...extrasSeleccionados],
+                subtotal: (productoSeleccionado.precio + 
+                          extrasSeleccionados.reduce((sum, extra) => sum + extra.precio, 0)) * cantidad,
+                horaAgregado: new Date().toISOString()
+            };
+            
+            // Agregar al carrito
+            carrito.agregarItem(itemCarrito);
+            
+            // Guardar en el espacio
+            await guardarPedidoEnEspacio();
+            
+            // Actualizar interfaz
+            actualizarContadorCarrito();
+            mostrarAnimacionAgregado();
+            
+            // Cerrar modal
+            cerrarModal('modalAgregarProducto');
+            
+            // Mostrar notificación
+            mostrarNotificacionAgregado(itemCarrito);
+        }
+
+        function mostrarAnimacionAgregado() {
+            const badge = document.getElementById('carritoBadge');
+            badge.classList.add('agregado-animacion');
+            setTimeout(() => {
+                badge.classList.remove('agregado-animacion');
+            }, 300);
+        }
+
+        function mostrarNotificacionAgregado(item) {
+            // Crear notificación temporal
+            const notificacion = document.createElement('div');
+            notificacion.className = 'notificacion-agregado';
+            notificacion.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>${item.cantidad}x ${item.nombre} agregado al carrito</span>
+            `;
+            notificacion.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 30px;
+                background: #2ecc71;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(notificacion);
+            
+            setTimeout(() => {
+                notificacion.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(notificacion);
+                }, 300);
+            }, 3000);
+        }
+
+        // ===== GESTIÓN DEL CARRITO =====
+        function actualizarContadorCarrito() {
+            const totalItems = carrito.items.reduce((sum, item) => sum + item.cantidad, 0);
+            
+            document.getElementById('carritoContador').textContent = totalItems;
+            document.getElementById('carritoContador2').textContent = totalItems;
+            document.getElementById('carritoBadge').textContent = totalItems;
+            
+            // Mostrar/ocultar badge
+            const badge = document.getElementById('carritoBadge');
+            badge.style.display = totalItems > 0 ? 'flex' : 'none';
+        }
+
+        function actualizarInfoCarrito() {
+            if (!espacioSeleccionado) return;
+            
+            obtenerEspacioPorId(espacioSeleccionado).then(espacio => {
+                if (espacio) {
+                    document.getElementById('infoMesaCarrito').textContent = `Mesa: ${espacio.nombre}`;
+                    document.getElementById('infoClienteCarrito').textContent = `Cliente: ${espacio.cliente}`;
+                }
+            });
+        }
+
+        function verCarrito() {
+            if (carrito.items.length === 0) {
+                alert('El carrito está vacío');
+                return;
+            }
+            
+            actualizarInfoCarrito();
+            mostrarCarritoCompleto();
+        }
+
+        function mostrarCarritoCompleto() {
+            const container = document.getElementById('carritoItemsContainer');
+            
+            if (carrito.items.length === 0) {
+                container.innerHTML = `
+                    <div class="carrito-vacio">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h3>Carrito vacío</h3>
+                        <p>Agrega productos al carrito</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = carrito.items.map((item, index) => {
+                    const iconoArea = item.area === 'cocina' ? '🔥' : '☕';
+                    
+                    return `
+                        <div class="carrito-item-detalle">
+                            <div class="item-detalle-info">
+                                <div class="item-detalle-header">
+                                    <span class="item-nombre-detalle">
+                                        ${item.cantidad}x ${item.nombre}
+                                    </span>
+                                    <span class="item-area-detalle badge-${item.area}">
+                                        ${iconoArea} ${item.area === 'cocina' ? 'Cocina' : 'Cafetería'}
+                                    </span>
+                                </div>
+                                
+                                ${item.extras && item.extras.length > 0 ? `
+                                    <div class="item-extras-detalle">
+                                        <strong>Extras:</strong>
+                                        ${item.extras.map(extra => 
+                                            `<span class="extra-detalle">${extra.nombre}</span>`
+                                        ).join(', ')}
+                                    </div>
+                                ` : ''}
+                                
+                                ${item.comentario ? `
+                                    <div class="item-comentario-detalle">
+                                        <i class="fas fa-sticky-note"></i>
+                                        ${item.comentario}
+                                    </div>
+                                ` : ''}
+                            </div>
+                            
+                            <div class="item-detalle-controls">
+                                <div class="cantidad-control-detalle">
+                                    <button class="btn-cantidad-detalle" onclick="modificarCantidadCarrito(${index}, -1)">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <span class="cantidad-detalle">${item.cantidad}</span>
+                                    <button class="btn-cantidad-detalle" onclick="modificarCantidadCarrito(${index}, 1)">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                
+                                <div class="item-subtotal-detalle">
+                                    $${item.subtotal.toFixed(2)}
+                                </div>
+                                
+                                <button class="btn btn-danger btn-sm" onclick="eliminarItemCarrito(${index})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            // Actualizar totales
+            const subtotal = carrito.calcularSubtotal();
+            const iva = subtotal * 0.16;
+            const total = subtotal + iva;
+            
+            document.getElementById('carritoSubtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('carritoIva').textContent = `$${iva.toFixed(2)}`;
+            document.getElementById('carritoTotal').textContent = `$${total.toFixed(2)}`;
+            
+            // Mostrar sección del carrito
+            document.getElementById('seccionPedidos').style.display = 'none';
+            document.getElementById('seccionCarrito').style.display = 'block';
+        }
+
+        function modificarCantidadCarrito(index, delta) {
+            carrito.modificarCantidad(index, delta);
+            guardarPedidoEnEspacio();
+            mostrarCarritoCompleto();
+            actualizarContadorCarrito();
+        }
+
+        async function eliminarItemCarrito(index) {
+            if (confirm('¿Eliminar este producto del carrito?')) {
+                carrito.eliminarItem(index);
+                await guardarPedidoEnEspacio();
+                mostrarCarritoCompleto();
+                actualizarContadorCarrito();
+            }
+        }
+
+        function limpiarCarritoCompleto() {
+            if (carrito.items.length === 0) return;
+            
+            if (confirm('¿Estás seguro de que quieres vaciar todo el carrito?')) {
+                carrito.limpiar();
+                guardarPedidoEnEspacio();
+                mostrarCarritoCompleto();
+                actualizarContadorCarrito();
+            }
+        }
+
+        function volverAMenu() {
+            document.getElementById('seccionCarrito').style.display = 'none';
+            document.getElementById('seccionPedidos').style.display = 'block';
+        }
+
+        async function guardarPedidoEnEspacio() {
+            if (!espacioSeleccionado || !carrito) return;
+            
+            const espacio = await obtenerEspacioPorId(espacioSeleccionado);
+            if (!espacio) return;
+            
+            await actualizarEstadoEspacio(espacioSeleccionado, {
+                pedido: {
+                    items: carrito.items,
+                    total: carrito.calcularSubtotal()
+                }
+            });
+        }
+
+        // ===== ENVÍO DE PEDIDOS =====
+        async function enviarPedido() {
+            if (!espacioSeleccionado) {
+                alert('No hay espacio seleccionado');
+                return;
+            }
+            
+            if (carrito.items.length === 0) {
+                alert('El carrito está vacío');
+                return;
+            }
+            
+            const espacio = await obtenerEspacioPorId(espacioSeleccionado);
+            if (!espacio) {
+                alert('Espacio no encontrado');
+                return;
+            }
+            
+            const usuario = getUsuarioActual();
+            
+            // Separar pedidos por área
+            const pedidosPorArea = {
+                cocina: carrito.items.filter(item => item.area === 'cocina'),
+                cafeteria: carrito.items.filter(item => item.area === 'cafeteria')
+            };
+            
+            // Verificar que haya al menos un área con productos
+            const areasConProductos = Object.keys(pedidosPorArea).filter(area => pedidosPorArea[area].length > 0);
+            if (areasConProductos.length === 0) {
+                alert('No hay productos para enviar');
+                return;
+            }
+            
+            // Crear pedidos en cada área
+            let pedidosCreados = [];
+            
+            for (const area of areasConProductos) {
+                const pedido = {
+                    espacioId: espacioSeleccionado,
+                    espacioNombre: espacio.nombre,
+                    cliente: espacio.cliente,
+                    area: area,
+                    items: pedidosPorArea[area],
+                    estado: 'pendiente',
+                    horaCreacion: new Date().toISOString(),
+                    mesero: usuario.nombre,
+                    total: pedidosPorArea[area].reduce((sum, item) => sum + item.subtotal, 0)
+                };
+                
+                const pedidoId = await crearPedido(pedido);
+                if (pedidoId) {
+                    pedidosCreados.push({ area, pedidoId });
+                    console.log(`✅ Pedido enviado a ${area}:`, pedido);
+                }
+            }
+            
+            if (pedidosCreados.length > 0) {
+                // Actualizar estado del espacio
+                await actualizarEstadoEspacio(espacioSeleccionado, {
+                    estado: 'preparacion',
+                    pedido: {
+                        items: carrito.items,
+                        total: carrito.calcularSubtotal(),
+                        enviado: true,
+                        horaEnvio: new Date().toISOString()
+                    }
+                });
+                
+                // Mostrar mensaje de éxito
+                const areasTexto = pedidosCreados.map(p => 
+                    p.area === 'cocina' ? '🔥 Cocina' : '☕ Cafetería'
+                ).join(' y ');
+                
+                alert(`✅ ¡PEDIDO ENVIADO EXITOSAMENTE!\n\n📤 Enviado a: ${areasTexto}\n📋 ${carrito.items.length} productos\n💰 Total: $${carrito.total.toFixed(2)}\n\nLos chefs ya están preparando tu pedido.`);
+                
+                // Limpiar y volver
+                carrito.limpiar();
+                actualizarContadorCarrito();
+                volverAEspacios();
+                
+                // Mostrar notificación de éxito
+                mostrarNotificacionExito();
+            } else {
+                alert('❌ Error al enviar el pedido');
+            }
+        }
+
+        function mostrarNotificacionExito() {
+            const notificacion = document.createElement('div');
+            notificacion.className = 'notificacion-exito';
+            notificacion.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <strong>¡Pedido enviado!</strong>
+                    <p>Los chefs están preparando tu pedido</p>
+                </div>
+            `;
+            notificacion.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 30px;
+                background: #2ecc71;
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                max-width: 350px;
+            `;
+            
+            document.body.appendChild(notificacion);
+            
+            setTimeout(() => {
+                notificacion.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    document.body.removeChild(notificacion);
+                }, 300);
+            }, 5000);
+        }
+
+        // ===== PEDIDOS LISTOS =====
+        async function cargarPedidosListos() {
+            try {
+                pedidosListos = await obtenerPedidosListos();
+                actualizarBadgePedidosListos();
+                
+                // Actualizar la vista si está visible
+                if (document.getElementById('seccionPedidosListos').style.display === 'block') {
+                    mostrarPedidosListos();
+                }
+            } catch (error) {
+                console.error('Error cargando pedidos listos:', error);
+            }
+        }
+
+        function actualizarBadgePedidosListos() {
+            const badge = document.getElementById('badgePedidosListos');
+            const badge2 = document.getElementById('badgePedidosListos2');
+            const count = pedidosListos.length;
+            
+            badge.textContent = count;
+            badge2.textContent = count;
+            
+            // Mostrar/ocultar badge
+            badge.style.display = count > 0 ? 'inline-block' : 'none';
+            badge2.style.display = count > 0 ? 'inline-block' : 'none';
+        }
+
+        function verPedidosListos() {
+            mostrarPedidosListos();
+            
+            document.getElementById('seccionEspacios').style.display = 'none';
+            document.getElementById('seccionPedidosListos').style.display = 'block';
+            document.getElementById('seccionPedidos').style.display = 'none';
+            document.getElementById('seccionCarrito').style.display = 'none';
+        }
+
+        function mostrarPedidosListos() {
+            const container = document.getElementById('pedidosListosGrid');
+            
+            if (pedidosListos.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle"></i>
+                        <p>No hay pedidos listos para entregar</p>
+                        <small>Los pedidos aparecerán aquí cuando cocina/cafetería los marquen como listos</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Agrupar por espacio
+            const pedidosPorEspacio = {};
+            pedidosListos.forEach(pedido => {
+                if (!pedidosPorEspacio[pedido.espacioId]) {
+                    pedidosPorEspacio[pedido.espacioId] = {
+                        espacioNombre: pedido.espacioNombre,
+                        cliente: pedido.cliente,
+                        pedidos: []
+                    };
+                }
+                pedidosPorEspacio[pedido.espacioId].pedidos.push(pedido);
+            });
+            
+            container.innerHTML = Object.values(pedidosPorEspacio).map(grupo => {
+                const totalItems = grupo.pedidos.reduce((sum, p) => sum + p.items.length, 0);
+                const areas = [...new Set(grupo.pedidos.map(p => p.area))];
+                
+                return `
+                    <div class="pedido-listo-card">
+                        <div class="pedido-listo-header">
+                            <h4>${grupo.espacioNombre} - ${grupo.cliente}</h4>
+                            <span class="badge badge-listo">${totalItems} items</span>
+                        </div>
+                        
+                        <div class="pedido-listo-areas">
+                            ${areas.map(area => `
+                                <span class="area-badge ${area}">
+                                    ${area === 'cocina' ? '🔥 Cocina' : '☕ Cafetería'}
+                                </span>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="pedido-listo-items">
+                            ${grupo.pedidos.map(pedido => `
+                                <div class="area-items">
+                                    <h5>${pedido.area === 'cocina' ? '🔥 Cocina' : '☕ Cafetería'}</h5>
+                                    ${pedido.items.map(item => `
+                                        <div class="item-listo">
+                                            <span>${item.cantidad}x ${item.nombre}</span>
+                                            ${item.comentario ? `
+                                                <small class="comentario-listo">
+                                                    <i class="fas fa-sticky-note"></i> ${item.comentario}
+                                                </small>
+                                            ` : ''}
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="pedido-listo-acciones">
+                            <button class="btn btn-success" 
+                                    onclick="marcarComoEntregado('${grupo.pedidos.map(p => p.id).join(',')}', '${grupo.espacioNombre}')">
+                                <i class="fas fa-check"></i> Marcar como Entregado
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function marcarComoEntregado(pedidosIds, espacioNombre) {
+            if (!confirm(`¿Marcar todos los pedidos de ${espacioNombre} como entregados?`)) {
+                return;
+            }
+            
+            const idsArray = pedidosIds.split(',');
+            let todosMarcados = true;
+            
+            for (const pedidoId of idsArray) {
+                const exito = await actualizarEstadoPedido(pedidoId, {
+                    estado: 'entregado',
+                    horaEntrega: new Date().toISOString()
+                });
+                
+                if (!exito) {
+                    todosMarcados = false;
+                }
+            }
+            
+            if (todosMarcados) {
+                // Verificar si todos los pedidos del espacio están entregados
+                const primerPedido = await obtenerPedido(idsArray[0]);
+                if (primerPedido) {
+                    const espacioId = primerPedido.espacioId;
+                    
+                    // Obtener todos los pedidos del espacio
+                    obtenerPedidosPorEspacio(espacioId).then(pedidos => {
+                        const todosEntregados = pedidos.every(p => p.estado === 'entregado');
+                        
+                        if (todosEntregados) {
+                            // Cambiar estado del espacio a "porcobrar"
+                            actualizarEstadoEspacio(espacioId, { estado: 'porcobrar' });
+                        }
+                    });
+                }
+                
+                alert('✅ Pedidos marcados como entregados exitosamente');
+                cargarPedidosListos();
+                cargarEspacios();
+            } else {
+                alert('❌ Error al marcar algunos pedidos como entregados');
+            }
+        }
+
+        // ===== FUNCIONES GENERALES =====
+        function abrirModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function cerrarModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function logout() {
+            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Añadir estilos CSS para animaciones
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+            
+            .carrito-vacio {
+                text-align: center;
+                padding: 40px 20px;
+                color: #7f8c8d;
+            }
+            
+            .carrito-vacio i {
+                font-size: 48px;
+                margin-bottom: 15px;
+                color: #bdc3c7;
+            }
+            
+            .carrito-item-detalle {
+                background: white;
+                border-radius: 10px;
+                padding: 15px;
+                margin-bottom: 15px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .item-detalle-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 8px;
+            }
+            
+            .item-nombre-detalle {
+                font-weight: 600;
+                color: #2c3e50;
+            }
+            
+            .item-area-detalle {
+                padding: 3px 8px;
+                border-radius: 6px;
+                font-size: 11px;
+                font-weight: 600;
+            }
+            
+            .item-extras-detalle {
+                font-size: 13px;
+                color: #555;
+                margin-bottom: 5px;
+            }
+            
+            .extra-detalle {
+                background: #e3f2fd;
+                padding: 2px 6px;
+                border-radius: 4px;
+                margin-right: 5px;
+                font-size: 12px;
+            }
+            
+            .item-comentario-detalle {
+                font-size: 13px;
+                color: #7f8c8d;
+                font-style: italic;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+            
+            .item-detalle-controls {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .cantidad-control-detalle {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .btn-cantidad-detalle {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                background: #f8f9fa;
+                border: 1px solid #dee2e6;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+            }
+            
+            .btn-cantidad-detalle:hover {
+                background: #e9ecef;
+            }
+            
+            .cantidad-detalle {
+                font-weight: 600;
+                min-width: 30px;
+                text-align: center;
+            }
+            
+            .item-subtotal-detalle {
+                font-weight: 700;
+                color: #2c3e50;
+                min-width: 80px;
+                text-align: right;
+            }
+            
+            .carrito-contenedor {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .carrito-items-contenedor {
+                flex: 1;
+                overflow-y: auto;
+                max-height: 500px;
+                padding-right: 10px;
+            }
+            
+            .carrito-resumen {
+                background: white;
+                border-radius: 10px;
+                padding: 20px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+            
+            .resumen-totales {
+                margin-bottom: 20px;
+            }
+            
+            .total-item {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 10px;
+                padding-bottom: 10px;
+                border-bottom: 1px solid #f1f1f1;
+            }
+            
+            .total-item.total {
+                font-size: 20px;
+                font-weight: 700;
+                color: #2c3e50;
+                border-bottom: none;
+                padding-top: 10px;
+                border-top: 2px solid #f1f1f1;
+            }
+            
+            .carrito-acciones {
+                display: flex;
+                gap: 10px;
+                justify-content: flex-end;
+            }
+            
+            .sin-extras {
+                text-align: center;
+                padding: 15px;
+                background: #f8f9fa;
+                border-radius: 8px;
+                color: #7f8c8d;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
